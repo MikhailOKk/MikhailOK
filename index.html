@@ -151,17 +151,22 @@
             }
         }
         
-        /* Убираем жирность и крупный шрифт у букв A, B, C, D в вариантах */
-        .option input + span {
+        /* Скрываем оригинальные буквы в вариантах */
+        .option span {
             font-weight: normal !important;
-            font-size: 1rem !important;
         }
         
-        /* Отдельно для мобильных */
-        @media (max-width: 768px) {
-            .option input + span {
-                font-size: 0.95rem !important;
-            }
+        /* Добавляем буквы A, B, C, D через псевдоэлемент (они не будут жирными) */
+        .options .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .options .option::before {
+            content: attr(data-letter);
+            font-weight: normal;
+            font-size: 1rem;
+            min-width: 20px;
         }
     </style>
 </head>
@@ -296,10 +301,10 @@
             q.options.forEach(opt => {
                 const letter = opt[0];
                 const isChecked = (savedVal === letter);
-                html += `<label class="option">
-                            <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
-                            <span>${escapeHtml(opt)}</span>
-                         </label>`;
+                html += `<label class="option" data-letter="A)">
+                            <input type="radio" name="q_0" value="A">
+                            <span>Появление социальных сетей</span>
+                        </label>`;
             });
             html += `</div></div>`;
         }
