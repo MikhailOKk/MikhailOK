@@ -84,31 +84,34 @@
         .question-text {
             font-weight: 600;
             margin-bottom: 14px;
+            font-size: 1rem;
         }
         .options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             margin-left: 16px;
         }
         .option {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
             cursor: pointer;
-            font-weight: normal;
+            font-size: 1rem;
+            line-height: 1.4;
         }
         .option input {
             width: 18px;
             height: 18px;
-            margin: 0;
+            margin-top: 2px;
             flex-shrink: 0;
         }
-        /* Исправление: убираем жирность и крупный шрифт у букв вариантов */
-        .option span,
-        .option span * {
-            font-weight: normal !important;
+        /* Главное исправление: текст ответа и буква одинаковые */
+        .option span {
             font-size: 1rem !important;
+            font-weight: normal !important;
+            color: #1e293b !important;
+            line-height: 1.4 !important;
         }
         .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
@@ -147,17 +150,16 @@
         footer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 16px; }
         iframe { display: none; }
         
-                /* Выравнивание размера и цвета текста ответов */
-        .option span {
-            font-size: 1rem !important;
-            color: #1e293b !important;
-            line-height: 1.4 !important;
-        }
-        
+        /* Мобильные устройства */
         @media (max-width: 768px) {
             .option span {
                 font-size: 0.95rem !important;
             }
+            .question-text {
+                font-size: 0.95rem;
+            }
+            .content { padding: 20px; }
+            .area-title { margin: 0 -20px 24px -20px; }
         }
     </style>
 </head>
