@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Самооценка CSM 2.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -168,10 +168,9 @@
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ НОВЫЙ URL ДЛЯ САМООЦЕНКИ (из шага 3)
+    // ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzR4xItZWGHG1byIvdmjPWs_tGbo3OC-sGMUwlQ2K8ezApn9uc1DVWuVCClC5wEkh7h/exec";
 
-    // Структура вопросов самооценки
     const AREAS = [
         { name: "Область 1. Осознание (тренды и цифровая трансформация)", questions: [
             "Понимаю тренды: AI, Big Data, IoT, Web 3.0, Cloud, Blockchain",
@@ -196,7 +195,7 @@
             "Могу провести финансовую и экономическую оценку проектов"
         ]},
         { name: "Область 4. Проектирование и разработка решения", questions: [
-            "Vладею продуктовым менеджментом и продуктовым мышлением",
+            "Владею продуктовым менеджментом и продуктовым мышлением",
             "Владею проектным менеджментом (Agile, Waterfall, Sbergile, PMBok, IPMA)",
             "Понимаю основы управления процессом разработки ПО",
             "Знаю партнёрскую программу Сбера"
@@ -226,10 +225,9 @@
     let currentArea = 0;
     let answers = {
         userName: "",
-        ratings: []  // плоский массив из 27 оценок
+        ratings: []
     };
 
-    // Инициализируем массив оценок (27 штук, null)
     function initRatings() {
         const totalQuestions = AREAS.reduce((sum, area) => sum + area.questions.length, 0);
         if (answers.ratings.length !== totalQuestions) {
@@ -293,7 +291,7 @@
             const globalIdx = getQuestionIndex(currentArea, i);
             const savedRating = answers.ratings[globalIdx];
             html += `<div class="question-block">
-                        <div class="question-text">${area.questions[i]}</div>
+                        <div class="question-text">${escapeHtml(area.questions[i])}</div>
                         <div class="rating-scale" data-global-idx="${globalIdx}">`;
             for (let rating = 1; rating <= 10; rating++) {
                 const isSelected = (savedRating === rating);
@@ -319,7 +317,6 @@
             saveToLocalStorage();
         });
 
-        // Привязываем события для радиокнопок
         for (let i = 0; i < area.questions.length; i++) {
             const globalIdx = getQuestionIndex(currentArea, i);
             const radios = document.querySelectorAll(`input[name="q_${globalIdx}"]`);
@@ -327,7 +324,6 @@
                 radio.addEventListener('change', (e) => {
                     answers.ratings[globalIdx] = parseInt(e.target.value);
                     saveToLocalStorage();
-                    // Обновляем визуальное выделение
                     const container = e.target.closest('.rating-scale');
                     if (container) {
                         Array.from(container.children).forEach(child => {
@@ -407,9 +403,10 @@
 
         const fields = { userName: answers.userName, date, time };
         
-        // Добавляем оценки (q1_1, q1_2, q1_3, q2_1, ...)
         for (let i = 0; i < answers.ratings.length; i++) {
-            fields[`q${Math.floor(i/10)+1}_${(i%10)+1}`] = answers.ratings[i];
+            const areaNum = Math.floor(i / 10) + 1;
+            const qNum = (i % 10) + 1;
+            fields[`q${areaNum}_${qNum}`] = answers.ratings[i];
         }
 
         for (const [key, value] of Object.entries(fields)) {
@@ -448,10 +445,11 @@
         if (!msgDiv) {
             msgDiv = document.createElement("div");
             msgDiv.id = "dynamicMessage";
-            document.querySelector("#surveyCard .content").appendChild(msgDiv);
+            const contentDiv = document.querySelector("#surveyCard .content");
+            if (contentDiv) contentDiv.appendChild(msgDiv);
         }
-        msgDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
-        setTimeout(() => msgDiv.innerHTML = '', 4000);
+        if (msgDiv) msgDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+        setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
     }
 
     function escapeHtml(str) {
