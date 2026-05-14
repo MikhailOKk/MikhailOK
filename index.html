@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тест CSM 2.0 — 8 областей компетенций</title>
+    <title>Тест CSM 2.0 — 8 областей</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -106,12 +106,6 @@
             margin-top: 2px;
             flex-shrink: 0;
         }
-        .option span {
-            font-size: 1rem !important;
-            font-weight: normal !important;
-            color: #1e293b !important;
-            line-height: 1.4 !important;
-        }
         .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
             display: flex;
@@ -150,12 +144,6 @@
         iframe { display: none; }
         
         @media (max-width: 768px) {
-            .option span {
-                font-size: 0.95rem !important;
-            }
-            .question-text {
-                font-size: 0.95rem;
-            }
             .content { padding: 20px; }
             .area-title { margin: 0 -20px 24px -20px; }
         }
@@ -293,9 +281,10 @@
                 const opt = q.options[optIdx];
                 const letter = String.fromCharCode(65 + optIdx);
                 const isChecked = (savedVal === letter);
+                // ИНЛАЙНОВЫЕ СТИЛИ — самый надёжный способ
                 html += `<label class="option">
                             <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
-                            <span>${escapeHtml(opt)}</span>
+                            <span style="font-size: 1rem; font-weight: 400; font-style: normal; color: #1e293b;">${escapeHtml(opt)}</span>
                          </label>`;
             }
             html += `</div></div>`;
