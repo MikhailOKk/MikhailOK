@@ -96,8 +96,20 @@
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            font-weight: normal;
         }
-        .option input { width: 18px; height: 18px; margin: 0; }
+        .option input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        /* Исправление: убираем жирность и крупный шрифт у букв вариантов */
+        .option span,
+        .option span * {
+            font-weight: normal !important;
+            font-size: 1rem !important;
+        }
         .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
             display: flex;
@@ -134,39 +146,15 @@
         .error { background: #fee2e2; color: #991b1b; }
         footer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 16px; }
         iframe { display: none; }
-        @media (max-width: 640px) {
-            ...
-        }
         
-        /* Исправление жирных букв в вариантах ответов */
-        .options .option span {
-            font-weight: normal !important;
-            font-size: 1rem;
-        }
-        
+        /* Дополнительная страховка для мобильных устройств */
         @media (max-width: 768px) {
-            .options .option span {
-                font-weight: normal !important;
-                font-size: 0.95rem;
+            .option span,
+            .option span * {
+                font-size: 0.95rem !important;
             }
-        }
-        
-        /* Скрываем оригинальные буквы в вариантах */
-        .option span {
-            font-weight: normal !important;
-        }
-        
-        /* Добавляем буквы A, B, C, D через псевдоэлемент (они не будут жирными) */
-        .options .option {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-        .options .option::before {
-            content: attr(data-letter);
-            font-weight: normal;
-            font-size: 1rem;
-            min-width: 20px;
+            .content { padding: 20px; }
+            .area-title { margin: 0 -20px 24px -20px; }
         }
     </style>
 </head>
@@ -298,14 +286,15 @@
             html += `<div class="question-block">
                         <div class="question-text">${currentArea+1}.${i+1}. ${escapeHtml(q.text)}</div>
                         <div class="options">`;
-            q.options.forEach(opt => {
-                const letter = opt[0];
+            for (let optIdx = 0; optIdx < q.options.length; optIdx++) {
+                const opt = q.options[optIdx];
+                const letter = String.fromCharCode(65 + optIdx);
                 const isChecked = (savedVal === letter);
-                html += `<label class="option" data-letter="A)">
-                            <input type="radio" name="q_0" value="A">
-                            <span>Появление социальных сетей</span>
-                        </label>`;
-            });
+                html += `<label class="option">
+                            <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
+                            <span>${escapeHtml(opt)}</span>
+                         </label>`;
+            }
             html += `</div></div>`;
         }
 
@@ -375,65 +364,61 @@
     }
 
     function submitAll() {
-    if (!answers.userName?.trim()) {
-        showMessage("❌ Введите ФИО", 'error');
-        return;
-    }
-    for (let i = 0; i < AREAS.length; i++) {
-        const closed = answers.closed[i];
-        if (!closed || closed.length !== AREAS[i].closedCount || closed.some(v => v === null)) {
-            currentArea = i;
-            render();
-            showMessage(`❌ Ответьте на все вопросы в области ${i+1}`, 'error');
+        if (!answers.userName?.trim()) {
+            showMessage("❌ Введите ФИО", 'error');
             return;
         }
-    }
-
-    const now = new Date();
-    const date = now.toLocaleDateString('ru-RU');
-    const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = SCRIPT_URL;
-    form.target = 'hiddenFrame';
-
-    const fields = { userName: answers.userName, date, time };
-
-    for (let a = 0; a < AREAS.length; a++) {
-        const area = AREAS[a];
-        for (let q = 0; q < area.closed.length; q++) {
-            const val = answers.closed[a][q];
-            const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
-            fields[`q${a+1}_${q+1}`] = val;
-            fields[`q${a+1}_${q+1}c`] = correct;
+        for (let i = 0; i < AREAS.length; i++) {
+            const closed = answers.closed[i];
+            if (!closed || closed.length !== AREAS[i].closedCount || closed.some(v => v === null)) {
+                currentArea = i;
+                render();
+                showMessage(`❌ Ответьте на все вопросы в области ${i+1}`, 'error');
+                return;
+            }
         }
-        if (area.open) {
-            fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
+
+        const now = new Date();
+        const date = now.toLocaleDateString('ru-RU');
+        const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrame';
+
+        const fields = { userName: answers.userName, date, time };
+
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            for (let q = 0; q < area.closed.length; q++) {
+                const val = answers.closed[a][q];
+                const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
+                fields[`q${a+1}_${q+1}`] = val;
+                fields[`q${a+1}_${q+1}c`] = correct;
+            }
+            if (area.open) {
+                fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
+            }
         }
+
+        for (const [key, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        showThankYouWindow(answers.userName);
+        localStorage.removeItem("csm_full_test");
     }
 
-    for (const [key, value] of Object.entries(fields)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-    // ✅ ПОКАЗЫВАЕМ ОКНО БЛАГОДАРНОСТИ ВМЕСТО ПЕРЕЗАГРУЗКИ
-    showThankYouWindow(answers.userName);
-    
-    // Очищаем сохранённые данные, чтобы при обновлении страницы тест начинался заново
-    localStorage.removeItem("csm_full_test");
-}
-    
     function showThankYouWindow(userName) {
-        // Убираем весь интерфейс опроса
         const card = document.getElementById("surveyCard");
         card.innerHTML = `
             <div class="header">
@@ -447,12 +432,10 @@
                 <p style="margin-top: 24px; font-size: 0.8rem; color: #64748b;">Вы можете закрыть это окно или вкладку браузера.</p>
             </div>
         `;
-        
-        // Скрываем footer (необязательно)
         const footer = document.querySelector("footer");
         if (footer) footer.style.display = "none";
     }
-    
+
     function showMessage(text, type) {
         let msgDiv = document.getElementById("dynamicMessage");
         if (!msgDiv) {
