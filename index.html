@@ -345,61 +345,84 @@
     }
 
     function submitAll() {
-        if (!answers.userName?.trim()) {
-            showMessage("❌ Введите ФИО", 'error');
+    if (!answers.userName?.trim()) {
+        showMessage("❌ Введите ФИО", 'error');
+        return;
+    }
+    for (let i = 0; i < AREAS.length; i++) {
+        const closed = answers.closed[i];
+        if (!closed || closed.length !== AREAS[i].closedCount || closed.some(v => v === null)) {
+            currentArea = i;
+            render();
+            showMessage(`❌ Ответьте на все вопросы в области ${i+1}`, 'error');
             return;
         }
-        for (let i = 0; i < AREAS.length; i++) {
-            const closed = answers.closed[i];
-            if (!closed || closed.length !== AREAS[i].closedCount || closed.some(v => v === null)) {
-                currentArea = i;
-                render();
-                showMessage(`❌ Ответьте на все вопросы в области ${i+1}`, 'error');
-                return;
-            }
-        }
-
-        const now = new Date();
-        const date = now.toLocaleDateString('ru-RU');
-        const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = SCRIPT_URL;
-        form.target = 'hiddenFrame';
-
-        const fields = { userName: answers.userName, date, time };
-
-        for (let a = 0; a < AREAS.length; a++) {
-            const area = AREAS[a];
-            for (let q = 0; q < area.closed.length; q++) {
-                const val = answers.closed[a][q];
-                const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
-                fields[`q${a+1}_${q+1}`] = val;
-                fields[`q${a+1}_${q+1}c`] = correct;
-            }
-            if (area.open) {
-                fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
-            }
-        }
-
-        for (const [key, value] of Object.entries(fields)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = value;
-            form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-
-        showMessage(`✅ Спасибо, ${answers.userName}! Все ответы сохранены.`, 'success');
-        localStorage.removeItem("csm_full_test");
-        setTimeout(() => location.reload(), 3000);
     }
 
+    const now = new Date();
+    const date = now.toLocaleDateString('ru-RU');
+    const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = SCRIPT_URL;
+    form.target = 'hiddenFrame';
+
+    const fields = { userName: answers.userName, date, time };
+
+    for (let a = 0; a < AREAS.length; a++) {
+        const area = AREAS[a];
+        for (let q = 0; q < area.closed.length; q++) {
+            const val = answers.closed[a][q];
+            const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
+            fields[`q${a+1}_${q+1}`] = val;
+            fields[`q${a+1}_${q+1}c`] = correct;
+        }
+        if (area.open) {
+            fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
+        }
+    }
+
+    for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    // ✅ ПОКАЗЫВАЕМ ОКНО БЛАГОДАРНОСТИ ВМЕСТО ПЕРЕЗАГРУЗКИ
+    showThankYouWindow(answers.userName);
+    
+    // Очищаем сохранённые данные, чтобы при обновлении страницы тест начинался заново
+    localStorage.removeItem("csm_full_test");
+}
+    
+    function showThankYouWindow(userName) {
+        // Убираем весь интерфейс опроса
+        const card = document.getElementById("surveyCard");
+        card.innerHTML = `
+            <div class="header">
+                <h1>📋 Тест CSM 2.0</h1>
+                <p>Спасибо за прохождение</p>
+            </div>
+            <div class="content" style="text-align: center; padding: 40px;">
+                <h2 style="color: #1e4b6e; margin-bottom: 16px;">🙏 Спасибо, ${escapeHtml(userName)}!</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 24px;">Ваши ответы успешно сохранены.<br>Это поможет нам стать лучше.</p>
+                <button onclick="window.close()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Закрыть страницу</button>
+                <p style="margin-top: 24px; font-size: 0.8rem; color: #64748b;">Вы можете закрыть это окно или вкладку браузера.</p>
+            </div>
+        `;
+        
+        // Скрываем footer (необязательно)
+        const footer = document.querySelector("footer");
+        if (footer) footer.style.display = "none";
+    }
+    
     function showMessage(text, type) {
         let msgDiv = document.getElementById("dynamicMessage");
         if (!msgDiv) {
