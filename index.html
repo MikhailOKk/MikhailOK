@@ -161,6 +161,25 @@
             .content { padding: 20px; }
             .area-title { margin: 0 -20px 24px -20px; }
         }
+        
+        /* ЖЁСТКОЕ ВЫРАВНИВАНИЕ: текст ответов как у букв */
+        .options .option,
+        .options .option span,
+        .options .option span * {
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            color: #1e293b !important;
+            line-height: 1.4 !important;
+        }
+        
+        /* Для мобильных устройств — чуть мельче, но одинаково */
+        @media (max-width: 768px) {
+            .options .option,
+            .options .option span,
+            .options .option span * {
+                font-size: 15px !important;
+            }
+        }
     </style>
 </head>
 <body>
