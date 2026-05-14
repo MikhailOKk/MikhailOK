@@ -342,19 +342,23 @@
             });
         }
 
-        document.getElementById("prevBtn")?.addEventListener('click', () => {
+        document.getElementById("nextBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
-                currentArea--;
+                currentArea++;
                 render();
+                // Прокручиваем страницу вверх после перерисовки
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
             }
         });
 
-        document.getElementById("nextBtn")?.addEventListener('click', () => {
+        document.getElementById("prevBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
-                currentArea++;
+                currentArea--;
                 render();
+                // Прокручиваем страницу вверх после перерисовки
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
             }
