@@ -2,144 +2,362 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тест CSM 2.0</title>
+    <title>Тест CSM 2.0 — Область 1. Осознание</title>
     <style>
-        body {
-            font-family: system-ui, sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            padding: 24px 16px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
         .card {
             background: white;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            text-align: center;
+            border-radius: 28px;
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
         }
-        h1 {
-            color: #1e4b6e;
+        .header {
+            background: linear-gradient(135deg, #1e4b6e 0%, #2c7da0 100%);
+            color: white;
+            padding: 28px 28px;
+        }
+        .header h1 {
+            font-size: 1.8rem;
             margin-bottom: 8px;
         }
-        .sub {
-            color: #64748b;
-            margin-bottom: 24px;
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
         }
-        input {
+        .content {
+            padding: 28px;
+        }
+        .user-info {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+        }
+        .user-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        .form-group {
+            max-width: 400px;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+        input, textarea {
             width: 100%;
-            padding: 14px;
+            padding: 12px 14px;
             border: 1px solid #cbd5e1;
-            border-radius: 16px;
-            font-size: 16px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+        .area-title {
+            background: #e6f0f5;
+            padding: 16px 20px;
+            margin: 0 -28px 28px -28px;
+            border-left: 6px solid #2c7da0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .question-block {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .question-text {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-left: 16px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+        .open-question textarea {
+            margin-top: 12px;
+            min-height: 100px;
         }
         button {
             background: #2c7da0;
             color: white;
             border: none;
-            padding: 14px 24px;
+            padding: 14px 28px;
             border-radius: 40px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
             width: 100%;
         }
-        button:hover { background: #1e5a74; }
+        button:hover {
+            background: #1e5a74;
+            transform: translateY(-1px);
+        }
         .message {
             margin-top: 20px;
-            padding: 12px;
+            padding: 14px;
             border-radius: 16px;
-            font-size: 14px;
+            text-align: center;
+            font-weight: 500;
         }
-        .success { background: #dcfce7; color: #166534; }
-        .error { background: #fee2e2; color: #991b1b; }
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 20px;
+        }
         iframe {
             display: none;
+        }
+        @media (max-width: 640px) {
+            .content { padding: 20px; }
+            .area-title { margin: 0 -20px 28px -20px; }
         }
     </style>
 </head>
 <body>
-<div class="card">
-    <h1>📋 Тест CSM 2.0</h1>
-    <div class="sub">Пожалуйста, представьтесь</div>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>📋 Тест CSM 2.0</h1>
+            <p>Область 1. Осознание (тренды, технологии, цифровая трансформация)</p>
+        </div>
+        <div class="content">
+            <div class="user-info">
+                <h3>👤 Ваши данные (не анонимно)</h3>
+                <div class="form-group">
+                    <label>ФИО *</label>
+                    <input type="text" id="fio" placeholder="Иванов Иван Иванович" autocomplete="off">
+                </div>
+            </div>
 
-    <input type="text" id="fio" placeholder="Ваше ФИО" autocomplete="off">
-    <button id="sendBtn">Отправить результат</button>
-    <div id="message"></div>
+            <div class="area-title">📌 ОБЛАСТЬ 1. ОСОЗНАНИЕ</div>
+
+            <!-- Вопрос 1.1 -->
+            <div class="question-block">
+                <div class="question-text">1.1. Что из перечисленного является ключевым отличием Web 3.0 от Web 2.0?</div>
+                <div class="options" id="q1-opts">
+                    <label class="option"><input type="radio" name="q1" value="A"> A) Появление социальных сетей</label>
+                    <label class="option"><input type="radio" name="q1" value="B"> B) Децентрализация данных и управление через блокчейн</label>
+                    <label class="option"><input type="radio" name="q1" value="C"> C) Увеличение скорости интернета</label>
+                    <label class="option"><input type="radio" name="q1" value="D"> D) Переход от мобильных приложений к десктопным</label>
+                </div>
+            </div>
+
+            <!-- Вопрос 1.2 -->
+            <div class="question-block">
+                <div class="question-text">1.2. Какой из трендов НЕ относится к Industry 4.0?</div>
+                <div class="options" id="q2-opts">
+                    <label class="option"><input type="radio" name="q2" value="A"> A) Интернет вещей (IoT)</label>
+                    <label class="option"><input type="radio" name="q2" value="B"> B) Большие данные (Big Data)</label>
+                    <label class="option"><input type="radio" name="q2" value="C"> C) Ручной труд без цифровизации</label>
+                    <label class="option"><input type="radio" name="q2" value="D"> D) Облачные вычисления (Cloud)</label>
+                </div>
+            </div>
+
+            <!-- Вопрос 1.3 -->
+            <div class="question-block">
+                <div class="question-text">1.3. Что является основной целью цифровой трансформации в крупном банке?</div>
+                <div class="options" id="q3-opts">
+                    <label class="option"><input type="radio" name="q3" value="A"> A) Повышение скорости, эффективности и качества клиентского опыта за счёт цифровых технологий</label>
+                    <label class="option"><input type="radio" name="q3" value="B"> B) Замена всех сотрудников роботами</label>
+                    <label class="option"><input type="radio" name="q3" value="C"> C) Снижение зарплат IT-специалистам</label>
+                    <label class="option"><input type="radio" name="q3" value="D"> D) Переход на бумажный документооборот</label>
+                </div>
+            </div>
+
+            <!-- Вопрос 1.4 -->
+            <div class="question-block">
+                <div class="question-text">1.4. Что из перечисленного является примером использования Big Data в банковской сфере?</div>
+                <div class="options" id="q4-opts">
+                    <label class="option"><input type="radio" name="q4" value="A"> A) Печать документов на принтере</label>
+                    <label class="option"><input type="radio" name="q4" value="B"> B) Увеличение числа банкоматов</label>
+                    <label class="option"><input type="radio" name="q4" value="C"> C) Замена офисов коворкингами</label>
+                    <label class="option"><input type="radio" name="q4" value="D"> D) Персонализация предложений на основе транзакционной истории клиента</label>
+                </div>
+            </div>
+
+            <!-- Открытый вопрос 1.5 -->
+            <div class="question-block open-question">
+                <div class="question-text">1.5 (открытый). Назовите 2–3 технологических тренда (из перечисленных выше или других), которые вы уже использовали или видите потенциал применить в вашей работе. Кратко опишите, как именно.</div>
+                <textarea id="openAnswer" rows="4" placeholder="Напишите ваш ответ..."></textarea>
+            </div>
+
+            <button id="sendBtn">✅ Завершить и отправить опрос</button>
+            <div id="message"></div>
+        </div>
+    </div>
+    <footer>Данные не сохраняются автоматически — отправьте форму, когда будете готовы</footer>
 </div>
 
-<!-- Скрытая форма для отправки без CORS -->
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ НОВЫЙ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7iKU9dNBqbdYinR6_3LrgaOIVICGQ-t7_-_WzMy_mmyPNER4N2DBxmEMvjbqPtUVL1A/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ НОВЫЙ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ СКРИПТА
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzGUIilP3kWM4QSo0g_m8D74qVIoFG0RG3vHYZgE49nBuI_iB5L_MUXA5n6CO-UDmtUA/exec";
+
+    // Правильные ответы
+    const correctAnswers = {
+        q1: "B",
+        q2: "C",
+        q3: "A",
+        q4: "D"
+    };
 
     const sendBtn = document.getElementById('sendBtn');
     const fioInput = document.getElementById('fio');
     const messageDiv = document.getElementById('message');
+    const openAnswer = document.getElementById('openAnswer');
+
+    // Функция проверки, что на все закрытые вопросы дан ответ
+    function allClosedAnswered() {
+        const q1 = document.querySelector('input[name="q1"]:checked');
+        const q2 = document.querySelector('input[name="q2"]:checked');
+        const q3 = document.querySelector('input[name="q3"]:checked');
+        const q4 = document.querySelector('input[name="q4"]:checked');
+        return q1 && q2 && q3 && q4;
+    }
+
+    // Получить выбранный ответ
+    function getSelectedValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : null;
+    }
 
     sendBtn.addEventListener('click', () => {
         const name = fioInput.value.trim();
         if (!name) {
-            showMessage('Введите ФИО', 'error');
+            showMessage('❌ Пожалуйста, введите ваше ФИО', 'error');
             return;
         }
 
-        sendBtn.disabled = true;
-        sendBtn.textContent = 'Отправка...';
-        showMessage('Отправляем данные...', '');
+        if (!allClosedAnswered()) {
+            showMessage('❌ Ответьте на все закрытые вопросы (1.1, 1.2, 1.3, 1.4)', 'error');
+            return;
+        }
+
+        const q1val = getSelectedValue('q1');
+        const q2val = getSelectedValue('q2');
+        const q3val = getSelectedValue('q3');
+        const q4val = getSelectedValue('q4');
+        const openText = openAnswer.value.trim();
+
+        const q1correct = (q1val === correctAnswers.q1) ? "Да" : "Нет";
+        const q2correct = (q2val === correctAnswers.q2) ? "Да" : "Нет";
+        const q3correct = (q3val === correctAnswers.q3) ? "Да" : "Нет";
+        const q4correct = (q4val === correctAnswers.q4) ? "Да" : "Нет";
 
         const now = new Date();
         const date = now.toLocaleDateString('ru-RU');
         const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-        // Создаём скрытую форму и отправляем её
+        // Отключаем кнопку, чтобы не отправили дважды
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Отправка...';
+        showMessage('Отправляем данные...', '');
+
+        // Создаём форму и отправляем
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = SCRIPT_URL;
-        form.target = 'hiddenFrame'; // отправляем в невидимый iframe, чтобы страница не перезагружалась
+        form.target = 'hiddenFrame';
 
-        const nameField = document.createElement('input');
-        nameField.type = 'hidden';
-        nameField.name = 'userName';
-        nameField.value = name;
+        const fields = {
+            userName: name,
+            date: date,
+            time: time,
+            q1: q1val,
+            q1correct: q1correct,
+            q2: q2val,
+            q2correct: q2correct,
+            q3: q3val,
+            q3correct: q3correct,
+            q4: q4val,
+            q4correct: q4correct,
+            q5open: openText || "(не заполнено)"
+        };
 
-        const dateField = document.createElement('input');
-        dateField.type = 'hidden';
-        dateField.name = 'date';
-        dateField.value = date;
-
-        const timeField = document.createElement('input');
-        timeField.type = 'hidden';
-        timeField.name = 'time';
-        timeField.value = time;
-
-        form.appendChild(nameField);
-        form.appendChild(dateField);
-        form.appendChild(timeField);
+        for (const [key, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
 
         document.body.appendChild(form);
         form.submit();
         document.body.removeChild(form);
 
-        // Показываем успех (форма отправилась, скрипт сам закроет окно)
-        showMessage(`✅ Спасибо, ${name}! Данные сохранены.`, 'success');
+        showMessage(`✅ Спасибо, ${name}! Ваши ответы сохранены.`, 'success');
+        
+        // Очищаем форму (опционально)
         fioInput.value = '';
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        openAnswer.value = '';
 
         sendBtn.disabled = false;
-        sendBtn.textContent = 'Отправить результат';
+        sendBtn.textContent = '✅ Завершить и отправить опрос';
     });
 
     function showMessage(text, type) {
         messageDiv.innerHTML = text ? `<div class="message ${type}">${text}</div>` : '';
+        if (type === 'success') {
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
     }
 </script>
 </body>
