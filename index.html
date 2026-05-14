@@ -60,6 +60,9 @@
         }
         .success { background: #dcfce7; color: #166534; }
         .error { background: #fee2e2; color: #991b1b; }
+        iframe {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -72,15 +75,18 @@
     <div id="message"></div>
 </div>
 
+<!-- Скрытая форма для отправки без CORS -->
+<iframe name="hiddenFrame" style="display:none"></iframe>
+
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT (внутри кавычек)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLt4F1rh1d5krDdkdYtTstNURxOBNavOteW5LRa_P-zi-KdAhZfLshCsqkslXovUVivQ/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ НОВЫЙ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ
+    const SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_НОВЫЙ_URL/exec";
 
     const sendBtn = document.getElementById('sendBtn');
     const fioInput = document.getElementById('fio');
     const messageDiv = document.getElementById('message');
 
-    sendBtn.addEventListener('click', async () => {
+    sendBtn.addEventListener('click', () => {
         const name = fioInput.value.trim();
         if (!name) {
             showMessage('Введите ФИО', 'error');
@@ -89,32 +95,47 @@
 
         sendBtn.disabled = true;
         sendBtn.textContent = 'Отправка...';
-        showMessage('', '');
+        showMessage('Отправляем данные...', '');
 
         const now = new Date();
         const date = now.toLocaleDateString('ru-RU');
         const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userName: name, date: date, time: time })
-            });
-            const result = await response.json();
-            if (result.result === 'success') {
-                showMessage(`✅ Спасибо, ${name}! Данные сохранены.`, 'success');
-                fioInput.value = '';
-            } else {
-                throw new Error('Ошибка сервера');
-            }
-        } catch (err) {
-            showMessage(`❌ Ошибка: ${err.message}. Проверьте интернет и попробуйте снова.`, 'error');
-            console.error(err);
-        } finally {
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Отправить результат';
-        }
+        // Создаём скрытую форму и отправляем её
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrame'; // отправляем в невидимый iframe, чтобы страница не перезагружалась
+
+        const nameField = document.createElement('input');
+        nameField.type = 'hidden';
+        nameField.name = 'userName';
+        nameField.value = name;
+
+        const dateField = document.createElement('input');
+        dateField.type = 'hidden';
+        dateField.name = 'date';
+        dateField.value = date;
+
+        const timeField = document.createElement('input');
+        timeField.type = 'hidden';
+        timeField.name = 'time';
+        timeField.value = time;
+
+        form.appendChild(nameField);
+        form.appendChild(dateField);
+        form.appendChild(timeField);
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        // Показываем успех (форма отправилась, скрипт сам закроет окно)
+        showMessage(`✅ Спасибо, ${name}! Данные сохранены.`, 'success');
+        fioInput.value = '';
+
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Отправить результат';
     });
 
     function showMessage(text, type) {
