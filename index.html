@@ -150,6 +150,19 @@
                 font-size: 0.95rem;
             }
         }
+        
+        /* Убираем жирность и крупный шрифт у букв A, B, C, D в вариантах */
+        .option input + span {
+            font-weight: normal !important;
+            font-size: 1rem !important;
+        }
+        
+        /* Отдельно для мобильных */
+        @media (max-width: 768px) {
+            .option input + span {
+                font-size: 0.95rem !important;
+            }
+        }
     </style>
 </head>
 <body>
