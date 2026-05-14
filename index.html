@@ -2,20 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тест CSM 2.0 — Области 1 и 2</title>
+    <title>Тест CSM 2.0 — 8 областей</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: #f0f2f5;
-            padding: 24px 16px;
+            padding: 20px;
             color: #1e293b;
         }
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 950px; margin: 0 auto; }
         .card {
             background: white;
             border-radius: 28px;
-            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
             overflow: hidden;
         }
         .header {
@@ -24,20 +24,41 @@
             padding: 28px;
         }
         .header h1 { font-size: 1.8rem; margin-bottom: 8px; }
-        .header p { opacity: 0.9; }
+        .progress-section {
+            padding: 12px 28px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #2c7da0;
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            color: #475569;
+            text-align: right;
+        }
         .content { padding: 28px; }
         .user-info {
             background: #f1f5f9;
             padding: 20px;
             border-radius: 20px;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
         .form-group { max-width: 400px; }
         label {
             display: block;
             font-weight: 500;
             margin-bottom: 6px;
-            color: #334155;
         }
         input, textarea {
             width: 100%;
@@ -47,97 +68,71 @@
             font-size: 1rem;
             font-family: inherit;
         }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
-        }
         .area-title {
             background: #e6f0f5;
-            padding: 16px 20px;
+            padding: 14px 20px;
             margin: 0 -28px 24px -28px;
             border-left: 6px solid #2c7da0;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 600;
         }
         .question-block {
-            margin-bottom: 32px;
-            padding-bottom: 24px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
             border-bottom: 1px solid #e2e8f0;
         }
         .question-text {
             font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             margin-left: 16px;
         }
         .option {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
         }
-        .option input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        .open-question textarea {
-            min-height: 100px;
-            margin-top: 12px;
-        }
+        .option input { width: 18px; height: 18px; margin: 0; }
+        .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
             gap: 16px;
+            margin-top: 24px;
         }
         button {
             background: #2c7da0;
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 12px 28px;
             border-radius: 40px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
             flex: 1;
         }
-        button.secondary {
-            background: #94a3b8;
-        }
-        button.secondary:hover { background: #64748b; }
-        button:hover {
-            background: #1e5a74;
-            transform: translateY(-1px);
-        }
+        button.secondary { background: #94a3b8; }
+        button:hover { background: #1e5a74; }
         .submit-btn {
             background: #10b981;
             width: 100%;
             margin-top: 16px;
         }
-        .submit-btn:hover { background: #059669; }
         .message {
             margin-top: 20px;
-            padding: 14px;
+            padding: 12px;
             border-radius: 16px;
             text-align: center;
             font-weight: 500;
         }
         .success { background: #dcfce7; color: #166534; }
         .error { background: #fee2e2; color: #991b1b; }
-        footer {
-            text-align: center;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 20px;
-        }
+        footer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 16px; }
         iframe { display: none; }
         @media (max-width: 640px) {
             .content { padding: 20px; }
@@ -147,97 +142,134 @@
 </head>
 <body>
 <div class="container">
-    <div class="card">
-        <div class="header">
-            <h1>📋 Тест CSM 2.0</h1>
-            <p>Области 1 и 2</p>
-        </div>
-        <div class="content" id="app"></div>
-    </div>
-    <footer>Данные сохраняются в браузере. Вы можете закрыть страницу и продолжить позже.</footer>
+    <div class="card" id="surveyCard"></div>
+    <footer>Прогресс автоматически сохраняется. Вы можете закрыть страницу и продолжить позже.</footer>
 </div>
-
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ НОВЫЙ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ СКРИПТА
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxF5Jyk1GZOkh8LZueWYWSpZGB49tkQxwE4Mi3oI1gK1N99pifpJE8ZIFIPapmyEKEKfQ/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ СКРИПТА
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-89h8VhIoddbVD1ig8i_VmQGSVjUATDj76JvdVoZ91xKdi0n8olO6o9l7rvjFJfCq5w/exec";
 
-    // Данные областей
-    const areas = [
-        {
-            name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)",
-            closed: [
-                { text: "Что из перечисленного является ключевым отличием Web 3.0 от Web 2.0?", options: ["A) Появление социальных сетей", "B) Децентрализация данных и управление через блокчейн", "C) Увеличение скорости интернета", "D) Переход от мобильных приложений к десктопным"], correct: "B" },
-                { text: "Какой из трендов НЕ относится к Industry 4.0?", options: ["A) Интернет вещей (IoT)", "B) Большие данные (Big Data)", "C) Ручной труд без цифровизации", "D) Облачные вычисления (Cloud)"], correct: "C" },
-                { text: "Что является основной целью цифровой трансформации в крупном банке?", options: ["A) Повышение скорости, эффективности и качества клиентского опыта за счёт цифровых технологий", "B) Замена всех сотрудников роботами", "C) Снижение зарплат IT-специалистам", "D) Переход на бумажный документооборот"], correct: "A" },
-                { text: "Что из перечисленного является примером использования Big Data в банковской сфере?", options: ["A) Печать документов на принтере", "B) Увеличение числа банкоматов", "C) Замена офисов коворкингами", "D) Персонализация предложений на основе транзакционной истории клиента"], correct: "D" }
-            ],
-            open: { text: "Назовите 2–3 технологических тренда (из перечисленных выше или других), которые вы уже использовали или видите потенциал применить в вашей работе. Кратко опишите, как именно." }
-        },
-        {
-            name: "ОБЛАСТЬ 2. СТРАТЕГИЯ",
-            closed: [
-                { text: "Что из перечисленного НЕ входит в канву бизнес-модели (Business Model Canvas)?", options: ["A) Ценностные предложения", "B) Ключевые партнёры", "C) Потоки доходов", "D) Годовая отчётность перед акционерами"], correct: "D" },
-                { text: "Какой элемент является центральным в концепции LoveMark?", options: ["A) Низкая цена", "B) Максимальное количество продуктов в линейке", "C) Агрессивная реклама", "D) Эмоциональная связь с брендом, выходящая за рамки рациональной выгоды"], correct: "D" },
-                { text: "Что такое «карта гипотез» в контексте поиска точек роста?", options: ["A) Географическая карта офисов", "B) Схема проезда до работы", "C) План эвакуации при пожаре", "D) Структурированный перечень предположений о том, как улучшить бизнес, с приоритетами и критериями проверки"], correct: "D" },
-                { text: "Что из перечисленного является примером человекоцентричности в банковском сервисе?", options: ["A) Увеличение числа продуктов в линейке", "B) Снижение затрат на поддержку", "C) Проектирование сервиса вокруг потребностей клиента, а не внутренних процессов банка", "D) Автоматизация без возможности обратиться к человеку"], correct: "C" }
-            ],
-            open: { text: "Приведите 1–2 примера из вашей работы, где вы применяли стратегическое мышление или работали с гипотезами роста для клиента / партнёра. Что это было за ситуация? Какие шаги предприняли?" }
-        }
+    const AREAS = [
+        { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
+          closed: [
+            { text: "Что из перечисленного является ключевым отличием Web 3.0 от Web 2.0?", options: ["A) Появление социальных сетей", "B) Децентрализация данных и управление через блокчейн", "C) Увеличение скорости интернета", "D) Переход от мобильных приложений к десктопным"], correct: "B" },
+            { text: "Какой из трендов НЕ относится к Industry 4.0?", options: ["A) Интернет вещей (IoT)", "B) Большие данные (Big Data)", "C) Ручной труд без цифровизации", "D) Облачные вычисления (Cloud)"], correct: "C" },
+            { text: "Что является основной целью цифровой трансформации в крупном банке?", options: ["A) Повышение скорости, эффективности и качества клиентского опыта за счёт цифровых технологий", "B) Замена всех сотрудников роботами", "C) Снижение зарплат IT-специалистам", "D) Переход на бумажный документооборот"], correct: "A" },
+            { text: "Что из перечисленного является примером использования Big Data в банковской сфере?", options: ["A) Печать документов на принтере", "B) Увеличение числа банкоматов", "C) Замена офисов коворкингами", "D) Персонализация предложений на основе транзакционной истории клиента"], correct: "D" }
+          ], openText: "Назовите 2–3 технологических тренда (из перечисленных выше или других), которые вы уже использовали или видите потенциал применить в вашей работе. Кратко опишите, как именно." },
+        { name: "ОБЛАСТЬ 2. СТРАТЕГИЯ", closedCount: 4, open: true,
+          closed: [
+            { text: "Что из перечисленного НЕ входит в канву бизнес-модели (Business Model Canvas)?", options: ["A) Ценностные предложения", "B) Ключевые партнёры", "C) Потоки доходов", "D) Годовая отчётность перед акционерами"], correct: "D" },
+            { text: "Какой элемент является центральным в концепции LoveMark?", options: ["A) Низкая цена", "B) Максимальное количество продуктов в линейке", "C) Агрессивная реклама", "D) Эмоциональная связь с брендом, выходящая за рамки рациональной выгоды"], correct: "D" },
+            { text: "Что такое «карта гипотез» в контексте поиска точек роста?", options: ["A) Географическая карта офисов", "B) Схема проезда до работы", "C) План эвакуации при пожаре", "D) Структурированный перечень предположений о том, как улучшить бизнес, с приоритетами и критериями проверки"], correct: "D" },
+            { text: "Что из перечисленного является примером человекоцентричности в банковском сервисе?", options: ["A) Увеличение числа продуктов в линейке", "B) Снижение затрат на поддержку", "C) Проектирование сервиса вокруг потребностей клиента, а не внутренних процессов банка", "D) Автоматизация без возможности обратиться к человеку"], correct: "C" }
+          ], openText: "Приведите 1–2 примера из вашей работы, где вы применяли стратегическое мышление или работали с гипотезами роста для клиента / партнёра. Что это было за ситуация? Какие шаги предприняли?" },
+        { name: "ОБЛАСТЬ 3. РЕИНЖИНИРИНГ ПРОЦЕССОВ И ОРГСТРУКТУРЫ", closedCount: 4, open: true,
+          closed: [
+            { text: "Что такое «клиентский путь» (Customer Journey Map, CJM)?", options: ["A) Список покупок клиента", "B) Визуализация последовательности взаимодействий клиента с компанией от первого контакта до завершения", "C) Штатное расписание отдела продаж", "D) Техническая документация для разработчиков"], correct: "B" },
+            { text: "Какой метод используется для оптимизации процессов?", options: ["A) AS-IS → TO-BE", "B) Только мозговой штурм", "C) Случайный выбор нового процесса", "D) Запрет на любые изменения"], correct: "A" },
+            { text: "Что из перечисленного является Core-финтех-продуктом Сбера?", options: ["A) Okko", "B) 2ГИС", "C) Самокат", "D) СберБанк Онлайн / SberPay"], correct: "D" },
+            { text: "Что из перечисленного является первым шагом в реинжиниринге процесса?", options: ["A) Внедрение нового ПО", "B) Описание текущего процесса «AS-IS» и его проблем", "C) Увольнение сотрудников", "D) Покупка нового оборудования"], correct: "B" }
+          ], openText: "Опишите ситуацию, где вы анализировали или улучшали какой-либо процесс в вашей работе (с клиентом, партнёром или внутри команды). Как выглядел процесс «как есть» (AS-IS)? Что вы предложили изменить («как будет» — TO-BE)?" },
+        { name: "ОБЛАСТЬ 4. ПРОЕКТИРОВАНИЕ И РАЗРАБОТКА РЕШЕНИЯ", closedCount: 4, open: true,
+          closed: [
+            { text: "Что из перечисленного является принципом Agile?", options: ["A) Итеративность, адаптивность, работающий продукт как главная мера прогресса", "B) Жёсткое планирование на 2 года вперёд", "C) Полное отсутствие документации", "D) Только индивидуальная работа, без команды"], correct: "A" },
+            { text: "Что такое Sbergile?", options: ["A) Адаптация Agile-методологий под процессы и культуру Сбера", "B) Фирменный кофе в офисе Сбера", "C) Название нового продукта для бизнеса", "D) HR-система оценки персонала"], correct: "A" },
+            { text: "Что из перечисленного входит в партнёрскую программу Сбера?", options: ["A) Только спонсорство спортивных мероприятий", "B) Запрет на любые партнёрства", "C) Модели совместного продвижения, интеграции продуктов и revenue share с партнёрами экосистемы", "D) Только разовые скидки для сотрудников"], correct: "C" },
+            { text: "Что такое продуктовое мышление?", options: ["A) Фокус на технических характеристиках продукта", "B) Фокус на ценности для клиента и результате, а не на выполнении формальных требований", "C) Создание максимально сложного продукта", "D) Игнорирование обратной связи"], correct: "B" }
+          ], openText: "Вспомните проект или задачу, где вы работали с партнёром Сбера (или внутри экосистемы). Как вы выстраивали взаимодействие? Какие инструменты проектного или продуктового менеджмента использовали?" },
+        { name: "ОБЛАСТЬ 5. ВНЕДРЕНИЕ И РАЗВИТИЕ РЕШЕНИЯ", closedCount: 3, open: true,
+          closed: [
+            { text: "Что такое «Продуктовая полка Сбера»?", options: ["A) Магазин сувениров для сотрудников", "B) Единый реестр (портфель) готовых цифровых решений и продуктов, доступных для тиражирования внутри банка и экосистемы", "C) Мебель в переговорной", "D) Список книг, рекомендованных к прочтению"], correct: "B" },
+            { text: "Какой формат партнёрства предполагает совместное владение активами и разделение рисков?", options: ["A) Агентский договор", "B) Простое письмо о намерениях", "C) Договор аренды", "D) Совместное предприятие (Joint Venture)"], correct: "D" },
+            { text: "Что из перечисленного является примером успешного внедрения решения в экосистеме Сбера?", options: ["A) Разработка нового внутреннего регламента", "B) Проведение внутреннего совещания", "C) Создание презентации для руководства", "D) Интеграция сервиса партнёра в СберБанк Онлайн, которую начали использовать 100 000 клиентов"], correct: "D" }
+          ], openText: "Назовите 1–2 решения (продукта, сервиса, интеграции), которые вы помогали внедрять для клиента или партнёра. Какие результаты были достигнуты (цифры, факты, отзывы)?" },
+        { name: "ОБЛАСТЬ 6. ОБЩЕСИСТЕМНЫЕ КОМПЕТЕНЦИИ И МЕТОДОЛОГИЯ ПРОЕКТОВ РАЗВИТИЯ", closedCount: 4, open: true,
+          closed: [
+            { text: "Что описывает процесс ЦТ П3181?", options: ["A) Жизненный цикл проекта цифровой трансформации в Сбере (от идеи до внедрения и сопровождения)", "B) Порядок увольнения сотрудников", "C) Бухгалтерский учёт основных средств", "D) Процесс закупки канцтоваров"], correct: "A" },
+            { text: "Для какой цели рекомендуется использовать GigaChat в проектах развития?", options: ["A) Только для развлечения", "B) Для генерации гипотез, написания кода, саммари встреч, анализа документов и поиска идей", "C) Для замены всех руководителей", "D) Для отправки личных сообщений"], correct: "B" },
+            { text: "Что из перечисленного относится к инструментам CSM в рамках ЕФС «НашБизнес»?", options: ["A) Только электронная почта", "B) Бумажный журнал учёта", "C) Корпоративная столовая", "D) Конструктор гипотез, трекер задач и портфель проектов развития"], correct: "D" },
+            { text: "Что из перечисленного является целью системы мотивации CSM?", options: ["A) Наказать за ошибки", "B) Стимулировать достижение целей цифровой трансформации и качества работы с клиентами / партнёрами", "C) Увеличить количество совещаний", "D) Снизить зарплаты"], correct: "B" }
+          ], openText: "Расскажите о вашем опыте использования GigaChat или других инструментов CSM (ЕФС «НашБизнес», АС «Эксперт» и др.). Как конкретно вы их применяли? Какой результат получили?" },
+        { name: "ОБЛАСТЬ 7. ОТРАСЛЕВЫЕ КОМПЕТЕНЦИИ", closedCount: 4, open: true,
+          closed: [
+            { text: "Какой из факторов НЕ является драйвером отрасли при стратегическом анализе?", options: ["A) Технологические инновации", "B) Изменение госрегулирования", "C) Рыночные тренды и поведение конкурентов", "D) Цвет стен в офисе"], correct: "D" },
+            { text: "Что из перечисленного является операционным KPI в производственной отрасли?", options: ["A) ROE", "B) OEE (общая эффективность оборудования)", "C) Рыночная капитализация", "D) Количество подписчиков в Telegram"], correct: "B" },
+            { text: "Что такое проектное финансирование?", options: ["A) Обычный кредит на любые цели", "B) Финансирование инвестиционного проекта под его будущие денежные потоки, часто с ограниченным регрессом на заёмщика", "C) Микрозайм до зарплаты", "D) Оплата командировочных расходов"], correct: "B" },
+            { text: "Какой из перечисленных рисков является ключевым в производственной отрасли?", options: ["A) Риск неправильного выбора цвета логотипа", "B) Риск повышения зарплат офисных сотрудников", "C) Риск остановки производства из-за поломки оборудования или сбоя в цепочке поставок", "D) Риск отсутствия кофе в кулере"], correct: "C" }
+          ], openText: "Назовите 2–3 ключевых вызова или тренда в отрасли ваших клиентов (например, производство, ритейл, логистика). Как эти вызовы влияют на их потребности в продуктах / сервисах Сбера и экосистемы?" },
+        { name: "ОБЛАСТЬ 8. SOFT SKILLS", closedCount: 4, open: true,
+          closed: [
+            { text: "Что из перечисленного является проявлением системного мышления?", options: ["A) Решение проблемы изолированно, без учёта связей с другими элементами", "B) Игнорирование обратной связи", "C) Быстрые решения без анализа", "D) Анализ проблемы как части целостной системы, учёт причинно-следственных связей и косвенных эффектов"], correct: "D" },
+            { text: "Какое поведение характеризует «управление результатом»?", options: ["A) Постановка SMART-целей, мониторинг прогресса, коррекция действий и доведение до результата", "B) Перекладывание ответственности на других", "C) Ожидание указаний сверху по каждому шагу", "D) Хаотичное переключение между задачами без завершения"], correct: "A" },
+            { text: "Что из перечисленного относится к навыку «управление собой»?", options: ["A) Эмоциональная реакция на любой негатив", "B) Прокрастинация до дедлайна", "C) Саморегуляция, тайм-менеджмент, стрессоустойчивость и поддержание работоспособности", "D) Постоянное согласие со всеми"], correct: "C" },
+            { text: "Что из перечисленного является проявлением ответственности?", options: ["A) Поиск виноватых при ошибке", "B) Сокрытие проблемы", "C) Перекладывание задачи на коллегу", "D) Признание ошибки, анализ причин и предложение решения"], correct: "D" }
+          ], openText: "Опишите ситуацию из вашей работы, где вам пришлось решать сложную проблему с участием нескольких сторон (клиент, партнёр, внутренние подразделения). Как вы действовали? Какие soft skills помогли?" }
     ];
 
     let currentArea = 0;
     let answers = {
         userName: "",
-        closed: [[], []],
-        open: ["", ""]
+        closed: AREAS.map(() => []),
+        open: AREAS.map(() => "")
     };
 
     function loadFromLocalStorage() {
-        const saved = localStorage.getItem("csm_test_areas");
+        const saved = localStorage.getItem("csm_full_test");
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 answers.userName = parsed.userName || "";
-                answers.closed = parsed.closed || [[], []];
-                answers.open = parsed.open || ["", ""];
-                for (let i = 0; i < 2; i++) {
+                answers.closed = parsed.closed || AREAS.map(() => []);
+                answers.open = parsed.open || AREAS.map(() => "");
+                for (let i = 0; i < AREAS.length; i++) {
                     if (!answers.closed[i]) answers.closed[i] = [];
-                    while (answers.closed[i].length < 4) answers.closed[i].push(null);
+                    while (answers.closed[i].length < AREAS[i].closedCount) answers.closed[i].push(null);
                 }
             } catch(e) {}
         }
     }
 
     function saveToLocalStorage() {
-        localStorage.setItem("csm_test_areas", JSON.stringify(answers));
+        localStorage.setItem("csm_full_test", JSON.stringify(answers));
     }
 
-    function renderArea() {
-        const app = document.getElementById("app");
-        const area = areas[currentArea];
+    function render() {
+        const card = document.getElementById("surveyCard");
+        const area = AREAS[currentArea];
+        const total = AREAS.length;
+        const percent = ((currentArea + 1) / total) * 100;
 
         let html = `
-            <div class="user-info">
-                <h3>👤 Ваши данные (не анонимно)</h3>
-                <div class="form-group">
-                    <label>ФИО *</label>
-                    <input type="text" id="fio" value="${escapeHtml(answers.userName)}" placeholder="Иванов Иван Иванович">
-                </div>
+            <div class="header">
+                <h1>📋 Тест CSM 2.0</h1>
+                <p>8 областей компетенций</p>
             </div>
-            <div class="area-title">📌 ${area.name}</div>
+            <div class="progress-section">
+                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+                <div class="progress-text">Область ${currentArea+1} из ${total}</div>
+            </div>
+            <div class="content">
+                <div class="user-info">
+                    <h3>👤 Ваши данные (не анонимно)</h3>
+                    <div class="form-group">
+                        <label>ФИО *</label>
+                        <input type="text" id="fio" value="${escapeHtml(answers.userName)}" placeholder="Иванов Иван Иванович">
+                    </div>
+                </div>
+                <div class="area-title">📌 ${area.name}</div>
         `;
 
-        // Закрытые вопросы
         for (let i = 0; i < area.closed.length; i++) {
             const q = area.closed[i];
             const savedVal = answers.closed[currentArea]?.[i];
             html += `<div class="question-block">
                         <div class="question-text">${currentArea+1}.${i+1}. ${escapeHtml(q.text)}</div>
-                        <div class="options" data-qidx="${i}">`;
-            q.options.forEach((opt, idx) => {
-                const letter = String.fromCharCode(65+idx);
+                        <div class="options">`;
+            q.options.forEach(opt => {
+                const letter = opt[0];
                 const isChecked = (savedVal === letter);
                 html += `<label class="option">
                             <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
@@ -247,23 +279,22 @@
             html += `</div></div>`;
         }
 
-        // Открытый вопрос
-        html += `<div class="question-block open-question">
-                    <div class="question-text">${currentArea+1}.5 (открытый). ${escapeHtml(area.open.text)}</div>
-                    <textarea id="openAnswer" rows="4">${escapeHtml(answers.open[currentArea] || '')}</textarea>
-                </div>`;
+        if (area.open) {
+            html += `<div class="question-block open-question">
+                        <div class="question-text">${currentArea+1}.${area.closed.length+1} (открытый). ${escapeHtml(area.openText)}</div>
+                        <textarea id="openAnswer" rows="4">${escapeHtml(answers.open[currentArea] || '')}</textarea>
+                    </div>`;
+        }
 
-        // Навигация
         html += `<div class="navigation">`;
         if (currentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
         else html += `<div></div>`;
-        if (currentArea < areas.length - 1) html += `<button id="nextBtn">Далее →</button>`;
+        if (currentArea < total - 1) html += `<button id="nextBtn">Далее →</button>`;
         else html += `<button id="submitBtn" class="submit-btn">✅ Завершить и отправить опрос</button>`;
-        html += `</div>`;
+        html += `</div></div>`;
 
-        app.innerHTML = html;
+        card.innerHTML = html;
 
-        // События
         document.getElementById("fio")?.addEventListener('input', (e) => {
             answers.userName = e.target.value;
             saveToLocalStorage();
@@ -279,26 +310,28 @@
             });
         }
 
-        document.getElementById("openAnswer")?.addEventListener('input', (e) => {
-            answers.open[currentArea] = e.target.value;
-            saveToLocalStorage();
-        });
+        if (area.open) {
+            document.getElementById("openAnswer")?.addEventListener('input', (e) => {
+                answers.open[currentArea] = e.target.value;
+                saveToLocalStorage();
+            });
+        }
 
         document.getElementById("prevBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
                 currentArea--;
-                renderArea();
+                render();
             } else {
-                showMessage("❌ Ответьте на все закрытые вопросы в текущей области", 'error');
+                showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
             }
         });
 
         document.getElementById("nextBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
                 currentArea++;
-                renderArea();
+                render();
             } else {
-                showMessage("❌ Ответьте на все закрытые вопросы в текущей области", 'error');
+                showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
             }
         });
 
@@ -308,25 +341,20 @@
     function validateCurrentArea() {
         const closed = answers.closed[currentArea];
         if (!closed) return false;
-        return closed.length === 4 && closed.every(v => v !== null && v !== undefined);
-    }
-
-    function validateFio() {
-        if (!answers.userName?.trim()) {
-            showMessage("❌ Пожалуйста, введите ваше ФИО", 'error');
-            return false;
-        }
-        return true;
+        return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
     function submitAll() {
-        if (!validateFio()) return;
-        for (let i = 0; i < areas.length; i++) {
+        if (!answers.userName?.trim()) {
+            showMessage("❌ Введите ФИО", 'error');
+            return;
+        }
+        for (let i = 0; i < AREAS.length; i++) {
             const closed = answers.closed[i];
-            if (!closed || closed.length !== 4 || closed.some(v => v === null || v === undefined)) {
+            if (!closed || closed.length !== AREAS[i].closedCount || closed.some(v => v === null)) {
                 currentArea = i;
-                renderArea();
-                showMessage(`❌ Ответьте на все закрытые вопросы в области ${i+1}`, 'error');
+                render();
+                showMessage(`❌ Ответьте на все вопросы в области ${i+1}`, 'error');
                 return;
             }
         }
@@ -342,23 +370,18 @@
 
         const fields = { userName: answers.userName, date, time };
 
-        // Добавляем ответы области 1
-        for (let i = 0; i < 4; i++) {
-            const val = answers.closed[0][i];
-            const correct = (val === areas[0].closed[i].correct) ? "Да" : "Нет";
-            fields[`q${i+1}`] = val;
-            fields[`q${i+1}correct`] = correct;
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            for (let q = 0; q < area.closed.length; q++) {
+                const val = answers.closed[a][q];
+                const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
+                fields[`q${a+1}_${q+1}`] = val;
+                fields[`q${a+1}_${q+1}c`] = correct;
+            }
+            if (area.open) {
+                fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
+            }
         }
-        fields.q5open = answers.open[0] || "(не заполнено)";
-
-        // Добавляем ответы области 2
-        for (let i = 0; i < 4; i++) {
-            const val = answers.closed[1][i];
-            const correct = (val === areas[1].closed[i].correct) ? "Да" : "Нет";
-            fields[`q2_${i+1}`] = val;
-            fields[`q2_${i+1}correct`] = correct;
-        }
-        fields.q2_5open = answers.open[1] || "(не заполнено)";
 
         for (const [key, value] of Object.entries(fields)) {
             const input = document.createElement('input');
@@ -373,24 +396,19 @@
         document.body.removeChild(form);
 
         showMessage(`✅ Спасибо, ${answers.userName}! Все ответы сохранены.`, 'success');
-        localStorage.removeItem("csm_test_areas");
-        
-        setTimeout(() => {
-            answers = { userName: "", closed: [[], []], open: ["", ""] };
-            currentArea = 0;
-            renderArea();
-        }, 3000);
+        localStorage.removeItem("csm_full_test");
+        setTimeout(() => location.reload(), 3000);
     }
 
     function showMessage(text, type) {
-        const msgDiv = document.getElementById("message") || (() => {
-            const div = document.createElement("div");
-            div.id = "message";
-            document.getElementById("app").appendChild(div);
-            return div;
-        })();
+        let msgDiv = document.getElementById("dynamicMessage");
+        if (!msgDiv) {
+            msgDiv = document.createElement("div");
+            msgDiv.id = "dynamicMessage";
+            document.querySelector("#surveyCard .content").appendChild(msgDiv);
+        }
         msgDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
-        if (type === 'success') setTimeout(() => msgDiv.innerHTML = '', 5000);
+        if (type === 'success') setTimeout(() => msgDiv.innerHTML = '', 4000);
     }
 
     function escapeHtml(str) {
@@ -404,7 +422,7 @@
     }
 
     loadFromLocalStorage();
-    renderArea();
+    render();
 </script>
 </body>
 </html>
