@@ -2,6 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="format-detection" content="telephone=no">
     <title>Тест CSM 2.0 — 8 областей</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -106,6 +108,15 @@
             margin-top: 2px;
             flex-shrink: 0;
         }
+        /* Глобальное правило для всех спанов в вариантах */
+        .option span {
+            font-size: 1rem !important;
+            font-weight: 400 !important;
+            color: #1e293b !important;
+            line-height: 1.4 !important;
+            font-style: normal !important;
+            text-decoration: none !important;
+        }
         .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
             display: flex;
@@ -144,6 +155,9 @@
         iframe { display: none; }
         
         @media (max-width: 768px) {
+            .option span {
+                font-size: 0.95rem !important;
+            }
             .content { padding: 20px; }
             .area-title { margin: 0 -20px 24px -20px; }
         }
@@ -281,10 +295,10 @@
                 const opt = q.options[optIdx];
                 const letter = String.fromCharCode(65 + optIdx);
                 const isChecked = (savedVal === letter);
-                // ИНЛАЙНОВЫЕ СТИЛИ — самый надёжный способ
+                // ИНЛАЙНОВЫЕ СТИЛИ С !important ДЛЯ SAFARI
                 html += `<label class="option">
                             <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
-                            <span style="font-size: 1rem; font-weight: 400; font-style: normal; color: #1e293b;">${escapeHtml(opt)}</span>
+                            <span style="font-size: 1rem !important; font-weight: 400 !important; color: #1e293b !important; line-height: 1.4 !important;">${escapeHtml(opt)}</span>
                          </label>`;
             }
             html += `</div></div>`;
