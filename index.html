@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест CSM 2.0</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #1e4b6e;
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #2c7da0;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover { background: #1e5a74; }
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 14px;
+        }
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📋 Тест CSM 2.0</h1>
+    <div class="sub">Пожалуйста, представьтесь</div>
+
+    <input type="text" id="fio" placeholder="Ваше ФИО" autocomplete="off">
+    <button id="sendBtn">Отправить результат</button>
+    <div id="message"></div>
+</div>
+
+<script>
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT (внутри кавычек)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxz5izpmcwUNs3vZOAMQtursk4cvwXoXAAYxhh6thv3k9y3RknEE-3A6ci8pd7a8zecQ/exec";
+
+    const sendBtn = document.getElementById('sendBtn');
+    const fioInput = document.getElementById('fio');
+    const messageDiv = document.getElementById('message');
+
+    sendBtn.addEventListener('click', async () => {
+        const name = fioInput.value.trim();
+        if (!name) {
+            showMessage('Введите ФИО', 'error');
+            return;
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Отправка...';
+        showMessage('', '');
+
+        const now = new Date();
+        const date = now.toLocaleDateString('ru-RU');
+        const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userName: name, date: date, time: time })
+            });
+            const result = await response.json();
+            if (result.result === 'success') {
+                showMessage(`✅ Спасибо, ${name}! Данные сохранены.`, 'success');
+                fioInput.value = '';
+            } else {
+                throw new Error('Ошибка сервера');
+            }
+        } catch (err) {
+            showMessage(`❌ Ошибка: ${err.message}. Проверьте интернет и попробуйте снова.`, 'error');
+            console.error(err);
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Отправить результат';
+        }
+    });
+
+    function showMessage(text, type) {
+        messageDiv.innerHTML = text ? `<div class="message ${type}">${text}</div>` : '';
+    }
+</script>
+</body>
+</html>
