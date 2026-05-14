@@ -135,8 +135,20 @@
         footer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 16px; }
         iframe { display: none; }
         @media (max-width: 640px) {
-            .content { padding: 20px; }
-            .area-title { margin: 0 -20px 24px -20px; }
+            ...
+        }
+        
+        /* Исправление жирных букв в вариантах ответов */
+        .options .option span {
+            font-weight: normal !important;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .options .option span {
+                font-weight: normal !important;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
