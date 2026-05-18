@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="format-detection" content="telephone=no">
-    <title>Тестирование CSM 2.0 — 8 областей</title>
+    <title>Тест CSM 2.0 — 8 областей</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -108,14 +107,11 @@
             margin-top: 2px;
             flex-shrink: 0;
         }
-        /* Глобальное правило для всех спанов в вариантах */
         .option span {
             font-size: 1rem !important;
             font-weight: 400 !important;
             color: #1e293b !important;
             line-height: 1.4 !important;
-            font-style: normal !important;
-            text-decoration: none !important;
         }
         .open-question textarea { min-height: 100px; margin-top: 8px; }
         .navigation {
@@ -151,13 +147,14 @@
         }
         .success { background: #dcfce7; color: #166534; }
         .error { background: #fee2e2; color: #991b1b; }
+        .thankyou { text-align: center; padding: 40px; }
+        .thankyou h2 { color: #1e4b6e; margin-bottom: 16px; }
+        .thankyou p { font-size: 1.1rem; margin-bottom: 24px; }
         footer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 16px; }
         iframe { display: none; }
-        
         @media (max-width: 768px) {
-            .option span {
-                font-size: 0.95rem !important;
-            }
+            .option span { font-size: 0.95rem !important; }
+            .question-text { font-size: 0.95rem; }
             .content { padding: 20px; }
             .area-title { margin: 0 -20px 24px -20px; }
         }
@@ -166,13 +163,13 @@
 <body>
 <div class="container">
     <div class="card" id="surveyCard"></div>
-    <footer>Прогресс автоматически сохраняется. Вы можете закрыть страницу и продолжить позже.</footer>
+    <footer>Прогресс автоматически сохраняется</footer>
 </div>
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ URL ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ СКРИПТА
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKnYe3mPtQ0_Hj1YCPEEiSaYKw-Y3zBLfjFvYxw8rCMMJRp7HBM8X46FidfKr_Dgo2Jw/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT
+    const SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_URL_ЗДЕСЬ/exec";
 
     const AREAS = [
         { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
@@ -267,7 +264,7 @@
 
         let html = `
             <div class="header">
-                <h1>📋 Тестирование CSM 2.0</h1>
+                <h1>📋 Тест CSM 2.0</h1>
                 <p>8 областей компетенций</p>
             </div>
             <div class="progress-section">
@@ -295,10 +292,9 @@
                 const opt = q.options[optIdx];
                 const letter = String.fromCharCode(65 + optIdx);
                 const isChecked = (savedVal === letter);
-                // ИНЛАЙНОВЫЕ СТИЛИ С !important ДЛЯ SAFARI
                 html += `<label class="option">
                             <input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}>
-                            <span style="font-size: 1rem !important; font-weight: 400 !important; color: #1e293b !important; line-height: 1.4 !important;">${escapeHtml(opt)}</span>
+                            <span>${escapeHtml(opt)}</span>
                          </label>`;
             }
             html += `</div></div>`;
@@ -342,22 +338,20 @@
             });
         }
 
-        document.getElementById("nextBtn")?.addEventListener('click', () => {
+        document.getElementById("prevBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
-                currentArea++;
+                currentArea--;
                 render();
-                // Прокручиваем страницу вверх после перерисовки
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
             }
         });
 
-        document.getElementById("prevBtn")?.addEventListener('click', () => {
+        document.getElementById("nextBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) {
-                currentArea--;
+                currentArea++;
                 render();
-                // Прокручиваем страницу вверх после перерисовки
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 showMessage("❌ Ответьте на все закрытые вопросы в этой области", 'error');
@@ -373,7 +367,7 @@
         return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
-        function submitAll() {
+    function submitAll() {
         if (!answers.userName?.trim()) {
             showMessage("❌ Введите ФИО", 'error');
             return;
@@ -388,7 +382,7 @@
             }
         }
 
-        // ВЫЧИСЛЯЕМ ПРОЦЕНТ ПРАВИЛЬНЫХ ОТВЕТОВ
+        // Вычисляем процент правильных ответов
         let totalQuestions = 0;
         let correctCount = 0;
         for (let a = 0; a < AREAS.length; a++) {
@@ -441,8 +435,9 @@
 
         showThankYouWindow(answers.userName, percentage);
         localStorage.removeItem("csm_full_test");
+    }
 
-        function showThankYouWindow(userName, percentage) {
+    function showThankYouWindow(userName, percentage) {
         const card = document.getElementById("surveyCard");
         let gradeText = "";
         if (percentage >= 90) gradeText = "🔥 Отлично! Вы эксперт";
@@ -455,11 +450,11 @@
                 <h1>📋 Тест CSM 2.0</h1>
                 <p>Результат</p>
             </div>
-            <div class="content" style="text-align: center; padding: 40px;">
-                <h2 style="color: #1e4b6e; margin-bottom: 16px;">🙏 Спасибо, ${escapeHtml(userName)}!</h2>
-                <p style="font-size: 1.2rem; margin-bottom: 12px;">Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
-                <p style="font-size: 1.1rem; margin-bottom: 24px;">${gradeText}</p>
-                <button onclick="window.close()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Закрыть страницу</button>
+            <div class="thankyou">
+                <h2>🙏 Спасибо, ${escapeHtml(userName)}!</h2>
+                <p>Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
+                <p>${gradeText}</p>
+                <button onclick="window.location.reload()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Пройти тест заново</button>
             </div>
         `;
         const footer = document.querySelector("footer");
