@@ -168,8 +168,8 @@
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrwMEBL45-_5FClKIZT1yVypKHx2KgmnlJ5Z3AYLWqaedqK6-NYpPz3UmV-ADuLoqi/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT (ПОСЛЕ ПЕРЕРАЗВЕРТЫВАНИЯ)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYRyf0gTJu45wRo55zzXQbKrTF26tSGNXVjg72xVp_2EO1xMValqzIA9Ck45GxU-mZJA/exec";
 
     const AREAS = [
         { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
@@ -361,6 +361,12 @@
         document.getElementById("submitBtn")?.addEventListener('click', submitAll);
     }
 
+    function validateCurrentArea() {
+        const closed = answers.closed[currentArea];
+        if (!closed) return false;
+        return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
+    }
+
     function submitAll() {
         if (!answers.userName?.trim()) {
             showMessage("❌ Введите ФИО", 'error');
@@ -376,13 +382,17 @@
             }
         }
 
+        // Вычисляем процент правильных ответов
         let totalQuestions = 0;
         let correctCount = 0;
         for (let a = 0; a < AREAS.length; a++) {
             const area = AREAS[a];
             for (let q = 0; q < area.closed.length; q++) {
                 totalQuestions++;
-                if (answers.closed[a][q] === area.closed[q].correct) correctCount++;
+                const userAnswer = answers.closed[a][q];
+                if (userAnswer === area.closed[q].correct) {
+                    correctCount++;
+                }
             }
         }
         const percentage = Math.round((correctCount / totalQuestions) * 100);
@@ -397,6 +407,19 @@
         form.target = 'hiddenFrame';
 
         const fields = { userName: answers.userName, date, time, percentage };
+
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            for (let q = 0; q < area.closed.length; q++) {
+                const val = answers.closed[a][q];
+                const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
+                fields[`q${a+1}_${q+1}`] = val;
+                fields[`q${a+1}_${q+1}c`] = correct;
+            }
+            if (area.open) {
+                fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
+            }
+        }
 
         for (const [key, value] of Object.entries(fields)) {
             const input = document.createElement('input');
@@ -431,7 +454,7 @@
                 <h2>🙏 Спасибо, ${escapeHtml(userName)}!</h2>
                 <p>Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
                 <p>${gradeText}</p>
-                <button onclick="window.close()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Закрыть страницу</button>
+                <button onclick="window.location.reload()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Пройти тест заново</button>
             </div>
         `;
         const footer = document.querySelector("footer");
