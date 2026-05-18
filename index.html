@@ -367,7 +367,7 @@
         return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
-    function submitAll() {
+        function submitAll() {
         if (!answers.userName?.trim()) {
             showMessage("❌ Введите ФИО", 'error');
             return;
@@ -382,59 +382,23 @@
             }
         }
 
-        // Вычисляем процент правильных ответов
         let totalQuestions = 0;
         let correctCount = 0;
         for (let a = 0; a < AREAS.length; a++) {
             const area = AREAS[a];
             for (let q = 0; q < area.closed.length; q++) {
                 totalQuestions++;
-                const userAnswer = answers.closed[a][q];
-                if (userAnswer === area.closed[q].correct) {
-                    correctCount++;
-                }
+                if (answers.closed[a][q] === area.closed[q].correct) correctCount++;
             }
         }
         const percentage = Math.round((correctCount / totalQuestions) * 100);
-
-        const now = new Date();
-        const date = now.toLocaleDateString('ru-RU');
-        const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = SCRIPT_URL;
-        form.target = 'hiddenFrame';
-
-        const fields = { userName: answers.userName, date, time, percentage };
-
-        for (let a = 0; a < AREAS.length; a++) {
-            const area = AREAS[a];
-            for (let q = 0; q < area.closed.length; q++) {
-                const val = answers.closed[a][q];
-                const correct = (val === area.closed[q].correct) ? "Да" : "Нет";
-                fields[`q${a+1}_${q+1}`] = val;
-                fields[`q${a+1}_${q+1}c`] = correct;
-            }
-            if (area.open) {
-                fields[`q${a+1}_${area.closed.length+1}`] = answers.open[a] || "(не заполнено)";
-            }
-        }
-
-        for (const [key, value] of Object.entries(fields)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = value;
-            form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-
-        showThankYouWindow(answers.userName, percentage);
+        
+        // Показываем окно с результатом
+        alert(`✅ Тест пройден!\nВаш результат: ${percentage}%\n(Данные не отправлены, это проверка)`);
+        
+        // Очищаем прогресс
         localStorage.removeItem("csm_full_test");
+        showThankYouWindow(answers.userName, percentage);
     }
 
     function showThankYouWindow(userName, percentage) {
