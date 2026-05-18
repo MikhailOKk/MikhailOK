@@ -169,7 +169,7 @@
 
 <script>
     // ⚠️ ВСТАВЬТЕ ВАШ URL ИЗ APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuk7nM1WVvkTzJOL-ziWU2eMhj7QEWeaYVGXSprqtMFCpq2Lg0WplAnkuMkhHgZpxrrA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhxYIq5ufVCqx_pKf2JNg1GtwRhL-pTzeYiQUJIZuruxG4efntiQN32FMoW0NaX1qh8Q/exec";
 
     const AREAS = [
         { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
@@ -359,12 +359,6 @@
         });
 
         document.getElementById("submitBtn")?.addEventListener('click', submitAll);
-    }
-
-    function validateCurrentArea() {
-        const closed = answers.closed[currentArea];
-        if (!closed) return false;
-        return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
     function submitAll() {
