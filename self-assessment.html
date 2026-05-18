@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Самооценка CSM 2.0</title>
+    <title>Самооценка компетенций CSM 2.0 - 8 областей</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -284,7 +284,7 @@
 
         let html = `
             <div class="header">
-                <h1>📊 Самооценка CSM 2.0</h1>
+                <h1>📊 Самооценка компетенций CSM 2.0</h1>
                 <p>Оцените каждый пункт от 1 до 10</p>
                 <details class="scale-info">
                     <summary>📏 Что означают оценки?</summary>
@@ -337,7 +337,7 @@
         if (currentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
         else html += `<div></div>`;
         if (currentArea < totalAreas - 1) html += `<button id="nextBtn">Далее →</button>`;
-        else html += `<button id="submitBtn" class="submit-btn">✅ Завершить самооценку</button>`;
+        else html += `<button id="submitBtn" class="submit-btn">✅ Завершить самооценку компетенций</button>`;
         html += `</div></div>`;
 
         card.innerHTML = html;
@@ -449,11 +449,11 @@
         const card = document.getElementById("surveyCard");
         card.innerHTML = `
             <div class="header">
-                <h1>📊 Самооценка CSM 2.0</h1>
+                <h1>📊 Самооценка компетенций CSM 2.0</h1>
             </div>
             <div class="content" style="text-align: center; padding: 40px;">
                 <h2 style="color: #1e4b6e; margin-bottom: 16px;">🙏 Спасибо, ${escapeHtml(userName)}!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 24px;">Ваша самооценка успешно сохранена.</p>
+                <p style="font-size: 1.1rem; margin-bottom: 24px;">Ваша самооценка компетенций успешно сохранена.</p>
                 <button onclick="window.location.reload()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Заполнить ещё раз</button>
             </div>
         `;
