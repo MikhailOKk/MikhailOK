@@ -386,13 +386,32 @@
             }
         }
         const percentage = Math.round((correctCount / totalQuestions) * 100);
-        
-        // Показываем окно с результатом
-        alert(`✅ Тест пройден!\nВаш результат: ${percentage}%\n(Данные не отправлены, это проверка)`);
-        
-        // Очищаем прогресс
-        localStorage.removeItem("csm_full_test");
+
+        const now = new Date();
+        const date = now.toLocaleDateString('ru-RU');
+        const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrame';
+
+        const fields = { userName: answers.userName, date, time, percentage };
+
+        for (const [key, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
         showThankYouWindow(answers.userName, percentage);
+        localStorage.removeItem("csm_full_test");
     }
 
     function showThankYouWindow(userName, percentage) {
