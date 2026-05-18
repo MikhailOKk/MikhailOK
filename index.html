@@ -373,7 +373,7 @@
         return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
-    function submitAll() {
+        function submitAll() {
         if (!answers.userName?.trim()) {
             showMessage("❌ Введите ФИО", 'error');
             return;
@@ -388,6 +388,21 @@
             }
         }
 
+        // ВЫЧИСЛЯЕМ ПРОЦЕНТ ПРАВИЛЬНЫХ ОТВЕТОВ
+        let totalQuestions = 0;
+        let correctCount = 0;
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            for (let q = 0; q < area.closed.length; q++) {
+                totalQuestions++;
+                const userAnswer = answers.closed[a][q];
+                if (userAnswer === area.closed[q].correct) {
+                    correctCount++;
+                }
+            }
+        }
+        const percentage = Math.round((correctCount / totalQuestions) * 100);
+
         const now = new Date();
         const date = now.toLocaleDateString('ru-RU');
         const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -397,7 +412,7 @@
         form.action = SCRIPT_URL;
         form.target = 'hiddenFrame';
 
-        const fields = { userName: answers.userName, date, time };
+        const fields = { userName: answers.userName, date, time, percentage };
 
         for (let a = 0; a < AREAS.length; a++) {
             const area = AREAS[a];
@@ -424,22 +439,27 @@
         form.submit();
         document.body.removeChild(form);
 
-        showThankYouWindow(answers.userName);
+        showThankYouWindow(answers.userName, percentage);
         localStorage.removeItem("csm_full_test");
-    }
 
-    function showThankYouWindow(userName) {
+        function showThankYouWindow(userName, percentage) {
         const card = document.getElementById("surveyCard");
+        let gradeText = "";
+        if (percentage >= 90) gradeText = "🔥 Отлично! Вы эксперт";
+        else if (percentage >= 75) gradeText = "👍 Хорошо. Вы уверенно владеете материалом";
+        else if (percentage >= 50) gradeText = "📚 Средний уровень. Есть куда расти";
+        else gradeText = "🎯 Начальный уровень. Рекомендуем изучить материалы";
+        
         card.innerHTML = `
             <div class="header">
-                <h1>📋 Тестестирование CSM 2.0</h1>
-                <p>Спасибо за прохождение</p>
+                <h1>📋 Тест CSM 2.0</h1>
+                <p>Результат</p>
             </div>
             <div class="content" style="text-align: center; padding: 40px;">
                 <h2 style="color: #1e4b6e; margin-bottom: 16px;">🙏 Спасибо, ${escapeHtml(userName)}!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 24px;">Ваши ответы успешно сохранены.<br>Это поможет нам стать лучше.</p>
+                <p style="font-size: 1.2rem; margin-bottom: 12px;">Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
+                <p style="font-size: 1.1rem; margin-bottom: 24px;">${gradeText}</p>
                 <button onclick="window.close()" style="background: #2c7da0; padding: 12px 32px; font-size: 1rem; border: none; border-radius: 40px; color: white; cursor: pointer;">Закрыть страницу</button>
-                <p style="margin-top: 24px; font-size: 0.8rem; color: #64748b;">Вы можете закрыть это окно или вкладку браузера.</p>
             </div>
         `;
         const footer = document.querySelector("footer");
