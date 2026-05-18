@@ -367,7 +367,7 @@
         return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
-        function submitAll() {
+            function submitAll() {
         if (!answers.userName?.trim()) {
             showMessage("❌ Введите ФИО", 'error');
             return;
