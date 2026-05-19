@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Тест CSM 2.0 — Оценка компетенций</title>
     <style>
-        /* ----- GLOBAL RESET & BASE ----- */
         * {
             margin: 0;
             padding: 0;
@@ -24,16 +23,13 @@
             margin: 0 auto;
         }
 
-        /* главная карточка */
         .card {
             background: #ffffff;
             border-radius: 2rem;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: all 0.2s ease;
         }
 
-        /* шапка градиент */
         .header {
             background: linear-gradient(125deg, #0b3b4f 0%, #1f6e8c 100%);
             color: white;
@@ -43,7 +39,6 @@
         .header h1 {
             font-size: 1.9rem;
             font-weight: 700;
-            letter-spacing: -0.3px;
             margin-bottom: 0.5rem;
         }
 
@@ -52,7 +47,6 @@
             font-size: 1rem;
         }
 
-        /* прогресс-бар */
         .progress-section {
             padding: 0.9rem 2rem;
             background: #f9fbfd;
@@ -70,7 +64,7 @@
             background: #1f6e8c;
             width: 0%;
             height: 100%;
-            transition: width 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: width 0.3s ease;
         }
 
         .progress-text {
@@ -81,12 +75,10 @@
             font-weight: 500;
         }
 
-        /* контент */
         .content {
             padding: 2rem;
         }
 
-        /* блок пользователя */
         .user-info {
             background: #f1f7fa;
             border-radius: 1.5rem;
@@ -119,7 +111,6 @@
             font-size: 0.95rem;
             font-family: inherit;
             background: white;
-            transition: 0.2s;
         }
 
         .form-group input:focus {
@@ -128,7 +119,6 @@
             box-shadow: 0 0 0 3px rgba(31, 110, 140, 0.2);
         }
 
-        /* заголовок области */
         .area-title {
             background: #e7f0f5;
             padding: 1rem 1.8rem;
@@ -139,7 +129,6 @@
             color: #154455;
         }
 
-        /* вопросы */
         .question-block {
             margin-bottom: 2rem;
             padding-bottom: 1.2rem;
@@ -151,7 +140,6 @@
             font-size: 1rem;
             margin-bottom: 1rem;
             color: #0f2f3f;
-            line-height: 1.4;
         }
 
         .options {
@@ -166,8 +154,6 @@
             align-items: flex-start;
             gap: 12px;
             cursor: pointer;
-            font-size: 0.95rem;
-            line-height: 1.4;
         }
 
         .option input {
@@ -179,8 +165,7 @@
         }
 
         .option span {
-            font-size: 0.95rem !important;
-            font-weight: 400;
+            font-size: 0.95rem;
             color: #1e2f3a;
         }
 
@@ -195,7 +180,6 @@
             margin-top: 0.5rem;
         }
 
-        /* навигация */
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -222,7 +206,6 @@
 
         button:hover {
             background: #0e4f68;
-            transform: translateY(-1px);
         }
 
         button.secondary:hover {
@@ -237,14 +220,12 @@
             background: #0b7a70;
         }
 
-        /* сообщения */
         .message {
             margin-top: 1.2rem;
             padding: 0.9rem;
             border-radius: 1.5rem;
             text-align: center;
             font-weight: 500;
-            font-size: 0.9rem;
         }
 
         .success {
@@ -257,7 +238,6 @@
             color: #b91c1c;
         }
 
-        /* страница "спасибо" */
         .thankyou {
             text-align: center;
             padding: 3rem 2rem;
@@ -284,15 +264,10 @@
             .content {
                 padding: 1.2rem;
             }
-
             .area-title {
                 margin: 0 -1.2rem 1.5rem -1.2rem;
                 padding: 0.8rem 1.2rem;
                 font-size: 1.1rem;
-            }
-
-            .option span {
-                font-size: 0.85rem !important;
             }
         }
     </style>
@@ -302,18 +277,11 @@
     <div class="card" id="surveyCard"></div>
     <footer>📌 Прогресс автоматически сохраняется в браузере</footer>
 </div>
-<iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // --------------------------------------------------------------
-    // 1. НАСТРОЙКА: URL вашей Google Таблицы (скрипт Apps Script)
-    //    ВАЖНО: разверните скрипт как веб-приложение и вставьте URL ниже
-    // --------------------------------------------------------------
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYRyf0gTJu45wRo55zzXQbKrTF26tSGNXVjg72xVp_2EO1xMValqzIA9Ck45GxU-mZJA/exec";  // замените на финальный URL после деплоя
+    // ВАЖНО: Замените этот URL на URL вашего развёрнутого Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYRyf0gTJu45wRo55zzXQbKrTF26tSGNXVjg72xVp_2EO1xMValqzIA9Ck45GxU-mZJA/exec";
 
-    // --------------------------------------------------------------
-    // 2. МАССИВ ОБЛАСТЕЙ (вопросы: закрытые + открытый)
-    // --------------------------------------------------------------
     const AREAS = [
         { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
             closed: [
@@ -388,16 +356,14 @@
         }
     ];
 
-    // ----- Структура хранения -----
     let currentArea = 0;
     let answers = {
         userName: "",
         userEmail: "",
-        closed: AREAS.map(() => []),     // массив ответов (буквы A,B,C,D)
+        closed: AREAS.map(() => []),
         open: AREAS.map(() => "")
     };
 
-    // Загрузка из localStorage
     function loadFromLocalStorage() {
         const saved = localStorage.getItem("csm_full_v2");
         if (saved) {
@@ -419,7 +385,6 @@
         localStorage.setItem("csm_full_v2", JSON.stringify(answers));
     }
 
-    // helper: экранирование
     function escapeHtml(str) {
         if (!str) return "";
         return str.replace(/[&<>]/g, function(m) {
@@ -427,33 +392,27 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
         });
     }
 
-    // отображение сообщения
-    function showMessage(text, type, autoClear = true) {
+    function showMessage(text, type) {
         let msgDiv = document.getElementById("dynamicMessage");
         const contentDiv = document.querySelector("#surveyCard .content");
         if (!msgDiv && contentDiv) {
             msgDiv = document.createElement("div");
             msgDiv.id = "dynamicMessage";
             contentDiv.appendChild(msgDiv);
-        } else if (!contentDiv) return;
+        }
         if (msgDiv) msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
-        if (autoClear && type !== 'error') setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 5000);
+        setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 4000);
     }
 
-    // валидация текущей области (все закрытые вопросы отвечены)
     function validateCurrentArea() {
         const closed = answers.closed[currentArea];
         if (!closed) return false;
-        const required = AREAS[currentArea].closedCount;
-        return closed.length === required && closed.every(v => v !== null && v !== undefined);
+        return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
     }
 
-    // Рендер всей страницы
     function render() {
         const card = document.getElementById("surveyCard");
         const area = AREAS[currentArea];
@@ -477,7 +436,6 @@
                 <div class="area-title">📌 ${escapeHtml(area.name)}</div>
         `;
 
-        // закрытые вопросы
         for (let i = 0; i < area.closed.length; i++) {
             const q = area.closed[i];
             const savedVal = answers.closed[currentArea]?.[i];
@@ -490,7 +448,6 @@
             html += `</div></div>`;
         }
 
-        // открытый вопрос
         if (area.open) {
             html += `<div class="question-block open-question"><div class="question-text">${currentArea+1}.${area.closed.length+1} (открытый). ${escapeHtml(area.openText)}</div>
                       <textarea id="openAnswer" rows="4">${escapeHtml(answers.open[currentArea] || '')}</textarea></div>`;
@@ -500,16 +457,14 @@
         if (currentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
         else html += `<div></div>`;
         if (currentArea < total-1) html += `<button id="nextBtn">Далее →</button>`;
-        else html += `<button id="submitBtn" class="submit-btn submit-btn">✅ Завершить и отправить</button>`;
+        else html += `<button id="submitBtn" class="submit-btn">✅ Завершить и отправить</button>`;
         html += `</div></div>`;
 
         card.innerHTML = html;
 
-        // слушатели ФИО/почта
         document.getElementById("fio")?.addEventListener('input', (e) => { answers.userName = e.target.value; saveToLocalStorage(); });
         document.getElementById("email")?.addEventListener('input', (e) => { answers.userEmail = e.target.value; saveToLocalStorage(); });
 
-        // радиокнопки
         for (let i = 0; i < area.closed.length; i++) {
             const radios = document.querySelectorAll(`input[name="q_${i}"]`);
             radios.forEach(radio => {
@@ -520,7 +475,6 @@
             });
         }
 
-        // открытый ответ
         if (area.open) {
             document.getElementById("openAnswer")?.addEventListener('input', (e) => {
                 answers.open[currentArea] = e.target.value;
@@ -528,7 +482,6 @@
             });
         }
 
-        // навигация
         document.getElementById("prevBtn")?.addEventListener('click', () => {
             if (validateCurrentArea()) { currentArea--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
             else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
@@ -540,12 +493,10 @@
         document.getElementById("submitBtn")?.addEventListener('click', submitAll);
     }
 
-    // ФИНАЛЬНАЯ ОТПРАВКА: подсчёт процентов по каждому вопросу (100% если верно) + среднее по области
     function submitAll() {
         if (!answers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
         if (!answers.userEmail.trim() || !answers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
 
-        // проверим все области полностью
         for (let i = 0; i < AREAS.length; i++) {
             const closedArr = answers.closed[i];
             if (!closedArr || closedArr.length !== AREAS[i].closedCount || closedArr.some(v => v === null)) {
@@ -556,41 +507,32 @@
             }
         }
 
-        // ----- Формируем данные для отправки по новой структуре: каждый вопрос = % (0 или 100) + среднее по области -----
         const now = new Date();
         const dateStr = now.toLocaleDateString('ru-RU');
         const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 
-        let payload = {
-            userName: answers.userName,
-            userEmail: answers.userEmail,
-            date: dateStr,
-            time: timeStr
-        };
+        let payload = { userName: answers.userName, userEmail: answers.userEmail, date: dateStr, time: timeStr };
 
-        // Обходим области
         for (let a = 0; a < AREAS.length; a++) {
             const area = AREAS[a];
             const closedAnswers = answers.closed[a];
-            const scores = []; // проценты по закрытым вопросам этой области
+            const scores = [];
             for (let q = 0; q < area.closed.length; q++) {
                 const isCorrect = (closedAnswers[q] === area.closed[q].correct);
                 const percentScore = isCorrect ? 100 : 0;
                 scores.push(percentScore);
                 payload[`area_${a+1}_q${q+1}_percent`] = percentScore;
             }
-            // среднее по области (сумма процентов / количество закрытых вопросов)
             const avgScore = scores.length ? Math.round(scores.reduce((s,v)=>s+v,0) / scores.length) : 0;
             payload[`area_${a+1}_avg`] = avgScore;
-            // открытый ответ
             payload[`area_${a+1}_open`] = answers.open[a] || "(не заполнено)";
         }
 
-        // Отправка через форму POST (скрытая)
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = SCRIPT_URL;
         form.target = 'hiddenFrame';
+        form.style.display = 'none';
         for (const [key, val] of Object.entries(payload)) {
             const input = document.createElement('input');
             input.type = 'hidden';
@@ -602,34 +544,30 @@
         form.submit();
         document.body.removeChild(form);
 
-        // Показываем окно благодарности с общим процентом (среднее по всем закрытым вопросам)
         let totalCorrectSum = 0;
         let totalClosedCount = 0;
         for (let a = 0; a < AREAS.length; a++) {
-            const area = AREAS[a];
-            for (let q = 0; q < area.closed.length; q++) {
-                const isCorr = (answers.closed[a][q] === area.closed[q].correct);
+            for (let q = 0; q < AREAS[a].closed.length; q++) {
+                const isCorr = (answers.closed[a][q] === AREAS[a].closed[q].correct);
                 totalCorrectSum += isCorr ? 100 : 0;
                 totalClosedCount++;
             }
         }
         const overallPercent = totalClosedCount ? Math.round(totalCorrectSum / totalClosedCount) : 0;
-        showThankYouWindow(answers.userName, overallPercent);
-        localStorage.removeItem("csm_full_v2");
-    }
-
-    function showThankYouWindow(userName, percentage) {
+        
         const card = document.getElementById("surveyCard");
-        let gradeText = percentage >= 90 ? "🔥 Отлично! Вы эксперт" : (percentage >= 75 ? "👍 Хорошо. Вы уверенно владеете материалом" : (percentage >= 50 ? "📚 Средний уровень. Есть куда расти" : "🎯 Начальный уровень. Рекомендуем изучить материалы"));
+        let gradeText = overallPercent >= 90 ? "🔥 Отлично! Вы эксперт" : (overallPercent >= 75 ? "👍 Хорошо" : (overallPercent >= 50 ? "📚 Средний уровень" : "🎯 Начальный уровень"));
         card.innerHTML = `
             <div class="header"><h1>📋 Тест CSM 2.0</h1><p>Результат</p></div>
-            <div class="thankyou"><h2>🙏 Спасибо, ${escapeHtml(userName)}!</h2>
-            <p>Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
+            <div class="thankyou"><h2>🙏 Спасибо, ${escapeHtml(answers.userName)}!</h2>
+            <p>Ваш результат: <strong>${overallPercent}%</strong> правильных ответов.</p>
             <p>${gradeText}</p>
-            <button onclick="window.close()" style="background:#1f6e8c; padding:12px 32px; border-radius:40px; border:none; color:white; font-weight:bold; cursor:pointer;">Закрыть страницу</button></div>
+            <p style="font-size:0.9rem; color:#1f6e8c;">Результаты отправлены в Google Таблицу</p>
+            <button onclick="location.reload()" style="background:#1f6e8c; padding:12px 32px; border-radius:40px; border:none; color:white; font-weight:bold; cursor:pointer; margin-top:1rem;">📝 Пройти тест заново</button></div>
         `;
         const footer = document.querySelector("footer");
         if(footer) footer.style.display = "none";
+        localStorage.removeItem("csm_full_v2");
     }
 
     loadFromLocalStorage();
