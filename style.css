@@ -40,6 +40,26 @@ body {
     font-size: 1rem;
 }
 
+.scale-info {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+}
+
+.scale-info summary {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.scale-info-content {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .progress-section {
     padding: 0.9rem 2rem;
     background: #f9fbfd;
@@ -81,6 +101,12 @@ body {
     flex-wrap: wrap;
     gap: 1.5rem;
     border: 1px solid #dceaf0;
+}
+
+.user-info h3 {
+    width: 100%;
+    margin-bottom: 0;
+    color: #1e4b6e;
 }
 
 .form-group {
@@ -133,6 +159,41 @@ body {
     font-size: 1rem;
     margin-bottom: 1rem;
     color: #0f2f3f;
+}
+
+.rating-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.rating-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid #e2e8f0;
+}
+
+.rating-option.selected {
+    background: #2c7da0;
+    color: white;
+    border-color: #2c7da0;
+}
+
+.rating-option input {
+    display: none;
+}
+
+.rating-option span {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .options {
@@ -206,7 +267,7 @@ button.secondary:hover {
 }
 
 .submit-btn {
-    background: #11998e;
+    background: #10b981;
 }
 
 .submit-btn:hover {
@@ -251,12 +312,7 @@ button.secondary:hover {
 
 .thankyou p {
     font-size: 1.1rem;
-    margin-bottom: 2rem;
-}
-
-.thankyou button {
-    margin: 0.5rem;
-    min-width: 200px;
+    margin-bottom: 1rem;
 }
 
 footer {
@@ -274,5 +330,14 @@ footer {
         margin: 0 -1.2rem 1.5rem -1.2rem;
         padding: 0.8rem 1.2rem;
         font-size: 1.1rem;
+    }
+    .rating-scale {
+        gap: 6px;
+    }
+    .rating-option {
+        padding: 4px 8px;
+    }
+    .rating-option span {
+        font-size: 0.8rem;
     }
 }
