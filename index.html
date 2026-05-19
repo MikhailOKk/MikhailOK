@@ -13,10 +13,10 @@
 </div>
 
 <script>
-    // ⚠️ УРЛЫ ДЛЯ APPS SCRIPT (ЗАМЕНИТЕ НА ВАШИ)
-    const SELF_ASSESSMENT_URL = "https://script.google.com/macros/s/AKfycbyHPLQ7gZGtnZYTrfnAZNBpuo3Ea5rwbsP9rbBiIAYU2ttUs_i8oS03_Iut-S80Sewb/exec";  // из selfAssessment.gs
-    const TEST_RESULTS_URL = "https://script.google.com/macros/s/AKfycbyA3BFfL-Mw0ukS7o2_lxetFSr5ELwvcLHGDtr_IJ4d5lwN1pQdsGdtOVcSpCwqZYA/exec";     // из Code.gs
-    const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec";   // из getQuestions.gs 
+    // ⚠️ ВСТАВЬТЕ ВАШИ ТРИ URL ИЗ APPS SCRIPT ⚠️
+    const SELF_ASSESSMENT_URL = "https://script.google.com/macros/s/AKfycbyHPLQ7gZGtnZYTrfnAZNBpuo3Ea5rwbsP9rbBiIAYU2ttUs_i8oS03_Iut-S80Sewb/exec";   // из selfAssessment.gs
+    const TEST_RESULTS_URL = "https://script.google.com/macros/s/AKfycbyA3BFfL-Mw0ukS7o2_lxetFSr5ELwvcLHGDtr_IJ4d5lwN1pQdsGdtOVcSpCwqZYA/exec";      // из Code.gs
+    const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec";    // из getQuestions.gs
 
     // ============================================================
     // БЛОК 1: САМООЦЕНКА КОМПЕТЕНЦИЙ (оценка от 1 до 10)
@@ -194,7 +194,7 @@
         if (selfCurrentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
         else html += `<div></div>`;
         if (selfCurrentArea < totalAreas - 1) html += `<button id="nextBtn">Далее →</button>`;
-        else html += `<button id="tSelfBtn" class="submit-btn">✅ Завершить самооценку</button>`;
+        else html += `<button id="submitSelfBtn" class="submit-btn">✅ Завершить самооценку</button>`;
         html += `</div></div>`;
 
         card.innerHTML = html;
@@ -229,10 +229,7 @@
         document.getElementById("submitSelfBtn")?.addEventListener('click', submitSelfAssessment);
     }
 
-    async function submitSelfAssessment() {
-        // ДОБАВЬТЕ ЭТУ СТРОКУ:
-        alert("Функция вызвана! URL: " + SCRIPT_URL);
-            
+    function submitSelfAssessment() {
         if (!selfAnswers.userName?.trim()) { showMessage("❌ Введите ФИО", 'error'); return; }
         if (!selfAnswers.userEmail?.trim() || !selfAnswers.userEmail.includes('@')) { showMessage("❌ Введите корректный email", 'error'); return; }
         if (!validateAllSelf()) { showMessage("❌ Оцените все утверждения перед отправкой", 'error'); return; }
@@ -243,82 +240,34 @@
         const dateStr = now.toLocaleDateString('ru-RU');
         const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 
-        let payload = {
-            userName: selfAnswers.userName,
-            userEmail: selfAnswers.userEmail,
-            date: dateStr,
-            time: timeStr
-        };
+        let payload = { userName: selfAnswers.userName, userEmail: selfAnswers.userEmail, date: dateStr, time: timeStr };
         
         let idx = 0;
-        // Область 1 (3 вопроса)
-        payload.area_1_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_1_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_1_q3 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 2 (6 вопросов)
-        payload.area_2_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_2_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_2_q3 = selfAnswers.ratings[idx++] || "";
-        payload.area_2_q4 = selfAnswers.ratings[idx++] || "";
-        payload.area_2_q5 = selfAnswers.ratings[idx++] || "";
-        payload.area_2_q6 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 3 (7 вопросов)
-        payload.area_3_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q3 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q4 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q5 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q6 = selfAnswers.ratings[idx++] || "";
-        payload.area_3_q7 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 4 (4 вопроса)
-        payload.area_4_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_4_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_4_q3 = selfAnswers.ratings[idx++] || "";
-        payload.area_4_q4 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 5 (2 вопроса)
-        payload.area_5_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_5_q2 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 6 (4 вопроса)
-        payload.area_6_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_6_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_6_q3 = selfAnswers.ratings[idx++] || "";
-        payload.area_6_q4 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 7 (3 вопроса)
-        payload.area_7_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_7_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_7_q3 = selfAnswers.ratings[idx++] || "";
-        
-        // Область 8 (3 вопроса)
-        payload.area_8_q1 = selfAnswers.ratings[idx++] || "";
-        payload.area_8_q2 = selfAnswers.ratings[idx++] || "";
-        payload.area_8_q3 = selfAnswers.ratings[idx++] || "";
-
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-            const result = await response.json();
-            console.log("Ответ сервера:", result);
-            
-            if (result.result === "success") {
-                showSelfCompleteScreen();
-                localStorage.removeItem("self_assessment_v2");
-            } else {
-                showMessage("❌ Ошибка: " + (result.message || "Неизвестная ошибка"), 'error');
+        for (let a = 0; a < AREAS_SELF.length; a++) {
+            let areaSum = 0;
+            for (let q = 0; q < AREAS_SELF[a].questions.length; q++) {
+                areaSum += selfAnswers.ratings[idx];
+                payload[`area_${a+1}_q${q+1}`] = selfAnswers.ratings[idx];
+                idx++;
             }
-        } catch (error) {
-            console.error("Ошибка отправки:", error);
-            showMessage("❌ Ошибка отправки. Проверьте интернет-соединение и URL скрипта.", 'error');
+            const areaAvg = Math.round(areaSum / AREAS_SELF[a].questions.length);
+            payload[`area_${a+1}_avg`] = areaAvg;
         }
+        
+        const allScores = selfAnswers.ratings.filter(r => r !== null);
+        const overallAvg = allScores.length ? Math.round(allScores.reduce((s,v)=>s+v,0) / allScores.length) : 0;
+        payload.overall_avg = overallAvg;
+
+        fetch(SELF_ASSESSMENT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showSelfCompleteScreen();
+        }).catch(() => {
+            showMessage("❌ Ошибка отправки. Попробуйте ещё раз.", 'error');
+        });
     }
 
     function showSelfCompleteScreen() {
@@ -334,12 +283,13 @@
             </div>
         `;
         document.getElementById("goToTestBtn")?.addEventListener('click', () => {
+            localStorage.removeItem("self_assessment_v2");
             loadTest();
         });
     }
 
     // ============================================================
-    // БЛОК 2: ТЕСТ (динамический, загрузка из таблицы)
+    // БЛОК 2: ТЕСТ (динамический, загрузка из getQuestions.gs)
     // ============================================================
 
     let testAreas = [];
@@ -472,7 +422,7 @@
         document.getElementById("submitTestBtn")?.addEventListener('click', submitTest);
     }
 
-    async function submitTest() {
+    function submitTest() {
         if (!testAnswers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
         if (!testAnswers.userEmail.trim() || !testAnswers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
 
@@ -509,26 +459,16 @@
             payload[`area_${a+1}_open`] = testAnswers.open[a] || "(не заполнено)";
         }
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-            const result = await response.json();
-            
-            if (result.result === "success") {
-                showTestCompleteScreen();
-                localStorage.removeItem("csm_test_v3");
-                localStorage.removeItem("self_assessment_v2");
-            } else {
-                showMessage("❌ Ошибка: " + (result.message || "Неизвестная ошибка"), "error");
-            }
-        } catch (error) {
-            console.error("Ошибка отправки теста:", error);
+        fetch(TEST_RESULTS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showTestCompleteScreen();
+        }).catch(() => {
             showMessage("❌ Ошибка при отправке. Проверьте интернет-соединение.", "error");
-        }
+        });
     }
 
     function showTestCompleteScreen() {
@@ -558,6 +498,8 @@
         `;
         const footer = document.querySelector("footer");
         if(footer) footer.style.display = "none";
+        localStorage.removeItem("csm_test_v3");
+        localStorage.removeItem("self_assessment_v2");
     }
 
     function closeTest() {
@@ -567,6 +509,7 @@
 
     async function loadTestQuestions() {
         try {
+            showMessage("⏳ Загрузка вопросов теста...", "success");
             const response = await fetch(TEST_QUESTIONS_URL);
             const text = await response.text();
             testAreas = JSON.parse(text);
@@ -589,8 +532,15 @@
             const card = document.getElementById("mainCard");
             card.innerHTML = `
                 <div class="header"><h1>⚠️ Ошибка загрузки теста</h1></div>
-                <div class="thankyou"><p>Не удалось загрузить вопросы теста.</p>
-                <button onclick="location.reload()">🔄 Перезагрузить</button></div>
+                <div class="thankyou">
+                    <p>Не удалось загрузить вопросы теста.</p>
+                    <p style="font-size:0.8rem; margin-top:1rem;">Проверьте:</p>
+                    <ul style="text-align:left; display:inline-block;">
+                        <li>Что лист "Вопросы" существует в таблице</li>
+                        <li>Что скрипт getQuestions.gs развёрнут и URL правильный</li>
+                    </ul>
+                    <button onclick="location.reload()" style="margin-top:1.5rem;">🔄 Перезагрузить</button>
+                </div>
             `;
         }
     }
@@ -618,12 +568,12 @@
             msgDiv = document.createElement("div");
             msgDiv.id = "dynamicMessage";
             contentDiv.appendChild(msgDiv);
-        }
+        } else if (!contentDiv) return;
         if (msgDiv) msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
-        setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 5000);
+        setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 4000);
     }
 
-    // Старт: самооценка
+    // СТАРТ: самооценка
     loadSelfFromLocalStorage();
     renderSelfAssessment();
 </script>
