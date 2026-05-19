@@ -14,11 +14,10 @@
 
 <script>
     // ⚠️ УРЛЫ ДЛЯ APPS SCRIPT (ЗАМЕНИТЕ НА ВАШИ)
-    const SELF_ASSESSMENT_URL = "https://script.google.com/macros/s/AKfycbyo1IyrSabXgdillZ28d8jBTUSiQ3s5xzAmW40xzNzWqGgeh-JWdtf1sNmMFK3OWbSsIw/exec";  // из selfAssessment.gs
-    const TEST_RESULTS_URL = "https://script.google.com/macros/s/AKfycbyebDPEM1oSy_8fOQ8_ZeUjG2xZe1l__Xs00a-hpaMnjRVMmV6iW_54eZlO8wgUtbnYdA/exec";     // из Code.gs
-    const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec"; 
-    
-    // URL для получения вопросов теста
+    // Один URL для ВСЕХ POST-запросов (и тест, и самооценка)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjDePWLJwSLW5J5wqonCWl_I9F1DcSc-3wruUSvFWSqcSxo2YeB00-Ve1FVZQ7rnGHnQ/exec";
+    // Отдельный URL для получения вопросов теста
+    const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/BBB.../exec";const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec"; 
 
     // ============================================================
     // БЛОК 1: САМООЦЕНКА КОМПЕТЕНЦИЙ (оценка от 1 до 10)
