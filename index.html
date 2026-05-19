@@ -3,61 +3,544 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Тест CSM 2.0 — Динамический</title>
+    <title>CSM 2.0 — Оценка компетенций и Тест</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-    <div class="card" id="surveyCard">
-        <div class="header">
-            <h1>📊 Оценка CSM 2.0</h1>
-            <p>Загрузка вопросов...</p>
-        </div>
-    </div>
+    <div class="card" id="mainCard"></div>
     <footer>📌 Прогресс автоматически сохраняется в браузере</footer>
 </div>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ ВАШ URL ДЛЯ ПОЛУЧЕНИЯ ВОПРОСОВ (doGet)
-    const QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec";
-    
-    // ⚠️ ВСТАВЬТЕ ВАШ URL ДЛЯ ОТПРАВКИ РЕЗУЛЬТАТОВ (doPost)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQqP2wBKFw0_iCoNkyt74OApczk1epS0AGz5bcnCMODo_fzKmUf1GSf2IThTHNYh7YHA/exec";
+    // ⚠️ УРЛЫ ДЛЯ APPS SCRIPT (ЗАМЕНИТЕ НА ВАШИ)
+    const SELF_ASSESSMENT_URL = "https://script.google.com/macros/s/AKfycbzaoM6go61iqDexHQnxZCxcUAqOmBJ4m5-619tAiElaW1GdPLu1h51OubNdVd7ug4s4/exec";
+    const TEST_RESULTS_URL = "https://script.google.com/macros/s/AKfycbwbpFfq0eRdxEEX-1KoTrWcDKqBcL_EfMOKdr_ij54Z2qpEj-9ytyESHWE4G6NaozoV3A/exec";
+    const TEST_QUESTIONS_URL = "https://script.google.com/macros/s/ВАШ_НОВЫЙ_URL/exec"; // URL для получения вопросов теста
 
-    let AREAS = [];
-    let currentArea = 0;
-    let answers = {
+    // ============================================================
+    // БЛОК 1: САМООЦЕНКА КОМПЕТЕНЦИЙ (оценка от 1 до 10)
+    // ============================================================
+    
+    const AREAS_SELF = [
+        { name: "Область 1. Осознание (тренды и цифровая трансформация)", questions: [
+            "Понимаю тренды: AI, Big Data, IoT, Web 3.0, Cloud, Blockchain",
+            "Понимаю цели, задачи и архитектуру цифровой трансформации банка",
+            "Знаю отраслевые кейсы и особенности технологического развития в нашей отрасли"
+        ]},
+        { name: "Область 2. Стратегия", questions: [
+            "Мыслю стратегически (вижу картину на 3–5 лет)",
+            "Знаю Стратегию Сбера и КПБ бизнес-модель сегмента",
+            "Могу описать бизнес-модель компании через Business Model Canvas",
+            "Умею находить точки роста и формулировать гипотезы трансформации (карта гипотез)",
+            "Понимаю модели управления цифровой трансформацией и цифровые роли в компании",
+            "Разделяю концепцию LoveMark и человекоцентричности"
+        ]},
+        { name: "Область 3. Реинжиниринг процессов и оргструктуры", questions: [
+            "Понимаю цели и задачи клиентских исследований",
+            "Владею бизнес-анализом и реинжинирингом процессов",
+            "Могу описать и спроектировать клиентский путь (Customer Journey Map, CJM)",
+            "Знаю цифровые Core-продукты Сбера (финтех)",
+            "Знаю финансовые и транзакционные Core-продукты Сбера",
+            "Понимаю основы IT-архитектуры",
+            "Могу провести финансовую и экономическую оценку проектов"
+        ]},
+        { name: "Область 4. Проектирование и разработка решения", questions: [
+            "Владею продуктовым менеджментом и продуктовым мышлением",
+            "Владею проектным менеджментом (Agile, Waterfall, Sbergile, PMBok, IPMA)",
+            "Понимаю основы управления процессом разработки ПО",
+            "Знаю партнёрскую программу Сбера"
+        ]},
+        { name: "Область 5. Внедрение и развитие решения", questions: [
+            "Знаю форматы партнёрств и основы патентного права",
+            "Понимаю процессы постановки решений на Продуктовую полку Сбера"
+        ]},
+        { name: "Область 6. Общесистемные компетенции и методология проектов развития", questions: [
+            "Знаю процесс цифровой трансформации (П3181)",
+            "Владею инструментами CSM при реализации проектов (ЕФС «НашБизнес», АС «Эксперт»)",
+            "Использую генеративные модели (GigaChat) в работе над проектами",
+            "Понимаю систему мотивации CSM"
+        ]},
+        { name: "Область 7. Отраслевые компетенции", questions: [
+            "Анализирую рынок, тренды, драйверы, госрегулирование и позицию отрасли",
+            "Знаю специфику отрасли (производство, финансовый анализ, ключевые риски, операционные KPI)",
+            "Ориентируюсь в продуктах и финансировании (кредитные/некредитные решения, ВЭД-продукты, проектное финансирование)"
+        ]},
+        { name: "Область 8. Soft skills", questions: [
+            "Владею системным мышлением и решением проблем",
+            "Умею управлять результатом и несу ответственность",
+            "Управляю собой (эмоции, время, стресс)"
+        ]}
+    ];
+
+    let selfAnswers = {
         userName: "",
         userEmail: "",
-        closed: [],
-        open: []
+        ratings: []
     };
-    let submissionInProgress = false;
-    let dataLoaded = false;
+    let selfCurrentArea = 0;
+    let selfCompleted = false;
 
-    function loadFromLocalStorage() {
-        if (!dataLoaded || AREAS.length === 0) return;
-        const saved = localStorage.getItem("csm_full_v3");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                answers.userName = parsed.userName || "";
-                answers.userEmail = parsed.userEmail || "";
-                answers.closed = parsed.closed || AREAS.map(() => []);
-                answers.open = parsed.open || AREAS.map(() => "");
-                for (let i = 0; i < AREAS.length; i++) {
-                    if (!answers.closed[i]) answers.closed[i] = [];
-                    while (answers.closed[i].length < AREAS[i].closedCount) answers.closed[i].push(null);
-                }
-            } catch(e) {}
+    function initSelfRatings() {
+        const totalQuestions = AREAS_SELF.reduce((sum, area) => sum + area.questions.length, 0);
+        if (selfAnswers.ratings.length !== totalQuestions) {
+            selfAnswers.ratings = new Array(totalQuestions).fill(null);
         }
     }
 
-    function saveToLocalStorage() {
-        if (!dataLoaded) return;
-        localStorage.setItem("csm_full_v3", JSON.stringify(answers));
+    function loadSelfFromLocalStorage() {
+        const saved = localStorage.getItem("self_assessment_v2");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                selfAnswers.userName = parsed.userName || "";
+                selfAnswers.userEmail = parsed.userEmail || "";
+                selfAnswers.ratings = parsed.ratings || [];
+                initSelfRatings();
+            } catch(e) { initSelfRatings(); }
+        } else {
+            initSelfRatings();
+        }
     }
 
+    function saveSelfToLocalStorage() {
+        localStorage.setItem("self_assessment_v2", JSON.stringify({
+            userName: selfAnswers.userName,
+            userEmail: selfAnswers.userEmail,
+            ratings: selfAnswers.ratings
+        }));
+    }
+
+    function getSelfQuestionIndex(areaIdx, qIdx) {
+        let idx = 0;
+        for (let a = 0; a < areaIdx; a++) {
+            idx += AREAS_SELF[a].questions.length;
+        }
+        return idx + qIdx;
+    }
+
+    function validateSelfCurrentArea() {
+        const area = AREAS_SELF[selfCurrentArea];
+        let startIdx = 0;
+        for (let a = 0; a < selfCurrentArea; a++) {
+            startIdx += AREAS_SELF[a].questions.length;
+        }
+        for (let i = 0; i < area.questions.length; i++) {
+            if (selfAnswers.ratings[startIdx + i] === null || selfAnswers.ratings[startIdx + i] === undefined) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateAllSelf() {
+        return selfAnswers.ratings.every(r => r !== null && r !== undefined);
+    }
+
+    function renderSelfAssessment() {
+        const card = document.getElementById("mainCard");
+        const area = AREAS_SELF[selfCurrentArea];
+        const totalAreas = AREAS_SELF.length;
+        const percent = ((selfCurrentArea + 1) / totalAreas) * 100;
+
+        let html = `
+            <div class="header">
+                <h1>📊 Самооценка компетенций CSM 2.0</h1>
+                <p>Оцените каждый пункт от 1 до 10</p>
+                <details class="scale-info">
+                    <summary>📏 Что означают оценки?</summary>
+                    <div class="scale-info-content">
+                        <span>• 1 — Не знаю, что это</span>
+                        <span>• 2 — Слышал термин</span>
+                        <span>• 3 — Могу дать определение</span>
+                        <span>• 4 — Изучал теорию</span>
+                        <span>• 5 — Применял под руководством</span>
+                        <span>• 6 — Применяю в простых ситуациях</span>
+                        <span>• 7 — Применяю уверенно</span>
+                        <span>• 8 — Применяю в сложных задачах</span>
+                        <span>• 9 — Могу обучать других</span>
+                        <span>• 10 — Внедрял в масштабе банка</span>
+                    </div>
+                </details>
+            </div>
+            <div class="progress-section">
+                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+                <div class="progress-text">Область ${selfCurrentArea+1} из ${totalAreas}</div>
+            </div>
+            <div class="content">
+                <div class="user-info">
+                    <h3>👤 Ваши данные</h3>
+                    <div class="form-group"><label>ФИО *</label><input type="text" id="fio" value="${escapeHtml(selfAnswers.userName)}" placeholder="Иванов Иван Иванович"></div>
+                    <div class="form-group"><label>📧 Электронная почта *</label><input type="email" id="email" value="${escapeHtml(selfAnswers.userEmail)}" placeholder="example@domain.com"></div>
+                </div>
+                <div class="area-title">📌 ${escapeHtml(area.name)}</div>
+        `;
+
+        for (let i = 0; i < area.questions.length; i++) {
+            const globalIdx = getSelfQuestionIndex(selfCurrentArea, i);
+            const savedRating = selfAnswers.ratings[globalIdx];
+            html += `<div class="question-block"><div class="question-text">${escapeHtml(area.questions[i])}</div><div class="rating-scale" data-global-idx="${globalIdx}">`;
+            for (let rating = 1; rating <= 10; rating++) {
+                const isSelected = (savedRating === rating);
+                html += `<label class="rating-option ${isSelected ? 'selected' : ''}" data-rating="${rating}">
+                            <input type="radio" name="q_${globalIdx}" value="${rating}" ${isSelected ? 'checked' : ''}>
+                            <span>${rating}</span>
+                         </label>`;
+            }
+            html += `</div></div>`;
+        }
+
+        html += `<div class="navigation">`;
+        if (selfCurrentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
+        else html += `<div></div>`;
+        if (selfCurrentArea < totalAreas - 1) html += `<button id="nextBtn">Далее →</button>`;
+        else html += `<button id="submitSelfBtn" class="submit-btn">✅ Завершить самооценку</button>`;
+        html += `</div></div>`;
+
+        card.innerHTML = html;
+
+        document.getElementById("fio")?.addEventListener('input', (e) => { selfAnswers.userName = e.target.value; saveSelfToLocalStorage(); });
+        document.getElementById("email")?.addEventListener('input', (e) => { selfAnswers.userEmail = e.target.value; saveSelfToLocalStorage(); });
+
+        for (let i = 0; i < area.questions.length; i++) {
+            const globalIdx = getSelfQuestionIndex(selfCurrentArea, i);
+            const radios = document.querySelectorAll(`input[name="q_${globalIdx}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    selfAnswers.ratings[globalIdx] = parseInt(e.target.value);
+                    saveSelfToLocalStorage();
+                    const container = e.target.closest('.rating-scale');
+                    if (container) {
+                        Array.from(container.children).forEach(child => child.classList.remove('selected'));
+                        e.target.closest('.rating-option')?.classList.add('selected');
+                    }
+                });
+            });
+        }
+
+        document.getElementById("prevBtn")?.addEventListener('click', () => {
+            if (validateSelfCurrentArea()) { selfCurrentArea--; renderSelfAssessment(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Оцените все утверждения в этой области", 'error');
+        });
+        document.getElementById("nextBtn")?.addEventListener('click', () => {
+            if (validateSelfCurrentArea()) { selfCurrentArea++; renderSelfAssessment(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Оцените все утверждения в этой области", 'error');
+        });
+        document.getElementById("submitSelfBtn")?.addEventListener('click', submitSelfAssessment);
+    }
+
+    function submitSelfAssessment() {
+        if (!selfAnswers.userName?.trim()) { showMessage("❌ Введите ФИО", 'error'); return; }
+        if (!selfAnswers.userEmail?.trim() || !selfAnswers.userEmail.includes('@')) { showMessage("❌ Введите корректный email", 'error'); return; }
+        if (!validateAllSelf()) { showMessage("❌ Оцените все утверждения перед отправкой", 'error'); return; }
+
+        showMessage("⏳ Отправка самооценки...", "success");
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU');
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+        let payload = { userName: selfAnswers.userName, userEmail: selfAnswers.userEmail, date: dateStr, time: timeStr, type: "self_assessment" };
+        
+        let areaScores = [];
+        let idx = 0;
+        for (let a = 0; a < AREAS_SELF.length; a++) {
+            let areaSum = 0;
+            for (let q = 0; q < AREAS_SELF[a].questions.length; q++) {
+                areaSum += selfAnswers.ratings[idx];
+                payload[`area_${a+1}_q${q+1}`] = selfAnswers.ratings[idx];
+                idx++;
+            }
+            const areaAvg = Math.round(areaSum / AREAS_SELF[a].questions.length);
+            areaScores.push(areaAvg);
+            payload[`area_${a+1}_avg`] = areaAvg;
+        }
+        payload.overall_avg = Math.round(areaScores.reduce((s,v)=>s+v,0) / areaScores.length);
+
+        fetch(SELF_ASSESSMENT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showSelfCompleteScreen();
+        }).catch(() => {
+            showMessage("❌ Ошибка отправки. Попробуйте ещё раз.", 'error');
+        });
+    }
+
+    function showSelfCompleteScreen() {
+        selfCompleted = true;
+        const card = document.getElementById("mainCard");
+        card.innerHTML = `
+            <div class="header"><h1>📊 Самооценка компетенций CSM 2.0</h1></div>
+            <div class="thankyou">
+                <h2>🙏 Спасибо, ${escapeHtml(selfAnswers.userName)}!</h2>
+                <p>Ваша самооценка компетенций успешно сохранена в Google Таблицу.</p>
+                <p style="margin: 1rem 0;">📌 Теперь вы можете перейти к тесту.</p>
+                <button id="goToTestBtn" class="submit-btn" style="background: #10b981; margin-top: 0.5rem;">📝 Перейти к тесту →</button>
+            </div>
+        `;
+        document.getElementById("goToTestBtn")?.addEventListener('click', () => {
+            localStorage.removeItem("self_assessment_v2");
+            loadTest();
+        });
+    }
+
+    // ============================================================
+    // БЛОК 2: ТЕСТ (динамический, загрузка из таблицы)
+    // ============================================================
+
+    let testAreas = [];
+    let testCurrentArea = 0;
+    let testAnswers = { userName: "", userEmail: "", closed: [], open: [] };
+    let testDataLoaded = false;
+
+    function loadTestFromLocalStorage() {
+        if (!testDataLoaded || testAreas.length === 0) return;
+        const saved = localStorage.getItem("csm_test_v3");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                testAnswers.userName = parsed.userName || selfAnswers.userName || "";
+                testAnswers.userEmail = parsed.userEmail || selfAnswers.userEmail || "";
+                testAnswers.closed = parsed.closed || testAreas.map(() => []);
+                testAnswers.open = parsed.open || testAreas.map(() => "");
+                for (let i = 0; i < testAreas.length; i++) {
+                    if (!testAnswers.closed[i]) testAnswers.closed[i] = [];
+                    while (testAnswers.closed[i].length < testAreas[i].closedCount) testAnswers.closed[i].push(null);
+                }
+            } catch(e) {}
+        } else {
+            testAnswers.userName = selfAnswers.userName || "";
+            testAnswers.userEmail = selfAnswers.userEmail || "";
+            testAnswers.closed = testAreas.map(() => []);
+            testAnswers.open = testAreas.map(() => "");
+            for (let i = 0; i < testAreas.length; i++) {
+                testAnswers.closed[i] = new Array(testAreas[i].closedCount).fill(null);
+            }
+        }
+    }
+
+    function saveTestToLocalStorage() {
+        if (!testDataLoaded) return;
+        localStorage.setItem("csm_test_v3", JSON.stringify({
+            userName: testAnswers.userName,
+            userEmail: testAnswers.userEmail,
+            closed: testAnswers.closed,
+            open: testAnswers.open
+        }));
+    }
+
+    function validateTestCurrentArea() {
+        if (!testDataLoaded) return false;
+        const closed = testAnswers.closed[testCurrentArea];
+        if (!closed) return false;
+        return closed.length === testAreas[testCurrentArea].closedCount && closed.every(v => v !== null && v !== undefined);
+    }
+
+    function renderTest() {
+        if (!testDataLoaded || testAreas.length === 0) return;
+        
+        const card = document.getElementById("mainCard");
+        const area = testAreas[testCurrentArea];
+        const total = testAreas.length;
+        const percent = ((testCurrentArea + 1) / total) * 100;
+
+        let html = `
+            <div class="header">
+                <h1>📋 Тест CSM 2.0</h1>
+                <p>Проверка знаний • 8 областей компетенций</p>
+            </div>
+            <div class="progress-section">
+                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+                <div class="progress-text">Область ${testCurrentArea+1} из ${total}</div>
+            </div>
+            <div class="content">
+                <div class="user-info">
+                    <div class="form-group"><label>👤 ФИО *</label><input type="text" id="fio" value="${escapeHtml(testAnswers.userName)}" placeholder="Иванов Иван Иванович"></div>
+                    <div class="form-group"><label>📧 Электронная почта *</label><input type="email" id="email" value="${escapeHtml(testAnswers.userEmail)}" placeholder="example@domain.com"></div>
+                </div>
+                <div class="area-title">📌 ${escapeHtml(area.name)}</div>
+        `;
+
+        for (let i = 0; i < area.closed.length; i++) {
+            const q = area.closed[i];
+            const savedVal = testAnswers.closed[testCurrentArea]?.[i];
+            html += `<div class="question-block"><div class="question-text">${testCurrentArea+1}.${i+1}. ${escapeHtml(q.text)}</div><div class="options">`;
+            for (let optIdx = 0; optIdx < q.options.length; optIdx++) {
+                const letter = String.fromCharCode(65 + optIdx);
+                const isChecked = (savedVal === letter);
+                html += `<label class="option"><input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}><span>${escapeHtml(q.options[optIdx])}</span></label>`;
+            }
+            html += `</div></div>`;
+        }
+
+        if (area.open) {
+            html += `<div class="question-block open-question"><div class="question-text">${testCurrentArea+1}.${area.closed.length+1} (открытый). ${escapeHtml(area.openText)}</div>
+                      <textarea id="openAnswer" rows="4">${escapeHtml(testAnswers.open[testCurrentArea] || '')}</textarea></div>`;
+        }
+
+        html += `<div class="navigation">`;
+        if (testCurrentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
+        else html += `<div></div>`;
+        if (testCurrentArea < total-1) html += `<button id="nextBtn">Далее →</button>`;
+        else html += `<button id="submitTestBtn" class="submit-btn">✅ Завершить тест</button>`;
+        html += `</div></div>`;
+
+        card.innerHTML = html;
+
+        document.getElementById("fio")?.addEventListener('input', (e) => { testAnswers.userName = e.target.value; saveTestToLocalStorage(); });
+        document.getElementById("email")?.addEventListener('input', (e) => { testAnswers.userEmail = e.target.value; saveTestToLocalStorage(); });
+
+        for (let i = 0; i < area.closed.length; i++) {
+            const radios = document.querySelectorAll(`input[name="q_${i}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    testAnswers.closed[testCurrentArea][i] = e.target.value;
+                    saveTestToLocalStorage();
+                });
+            });
+        }
+
+        if (area.open) {
+            document.getElementById("openAnswer")?.addEventListener('input', (e) => {
+                testAnswers.open[testCurrentArea] = e.target.value;
+                saveTestToLocalStorage();
+            });
+        }
+
+        document.getElementById("prevBtn")?.addEventListener('click', () => {
+            if (validateTestCurrentArea()) { testCurrentArea--; renderTest(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
+        });
+        document.getElementById("nextBtn")?.addEventListener('click', () => {
+            if (validateTestCurrentArea()) { testCurrentArea++; renderTest(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
+        });
+        document.getElementById("submitTestBtn")?.addEventListener('click', submitTest);
+    }
+
+    function submitTest() {
+        if (!testAnswers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
+        if (!testAnswers.userEmail.trim() || !testAnswers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
+
+        for (let i = 0; i < testAreas.length; i++) {
+            const closedArr = testAnswers.closed[i];
+            if (!closedArr || closedArr.length !== testAreas[i].closedCount || closedArr.some(v => v === null)) {
+                testCurrentArea = i;
+                renderTest();
+                showMessage(`❌ Ответьте на все закрытые вопросы в области ${i+1}`, "error");
+                return;
+            }
+        }
+
+        showMessage("⏳ Отправка результатов теста...", "success");
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU');
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+        let payload = { userName: testAnswers.userName, userEmail: testAnswers.userEmail, date: dateStr, time: timeStr, type: "test" };
+
+        for (let a = 0; a < testAreas.length; a++) {
+            const area = testAreas[a];
+            const closedAnswers = testAnswers.closed[a];
+            const scores = [];
+            for (let q = 0; q < area.closed.length; q++) {
+                const isCorrect = (closedAnswers[q] === area.closed[q].correct);
+                const percentScore = isCorrect ? 100 : 0;
+                scores.push(percentScore);
+                payload[`area_${a+1}_q${q+1}_percent`] = percentScore;
+            }
+            const avgScore = scores.length ? Math.round(scores.reduce((s,v)=>s+v,0) / scores.length) : 0;
+            payload[`area_${a+1}_avg`] = avgScore;
+            payload[`area_${a+1}_open`] = testAnswers.open[a] || "(не заполнено)";
+        }
+
+        fetch(TEST_RESULTS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showTestCompleteScreen();
+        }).catch(() => {
+            showMessage("❌ Ошибка при отправке. Проверьте интернет-соединение.", "error");
+        });
+    }
+
+    function showTestCompleteScreen() {
+        let totalCorrectSum = 0;
+        let totalClosedCount = 0;
+        for (let a = 0; a < testAreas.length; a++) {
+            for (let q = 0; q < testAreas[a].closed.length; q++) {
+                const isCorr = (testAnswers.closed[a][q] === testAreas[a].closed[q].correct);
+                totalCorrectSum += isCorr ? 100 : 0;
+                totalClosedCount++;
+            }
+        }
+        const overallPercent = totalClosedCount ? Math.round(totalCorrectSum / totalClosedCount) : 0;
+        
+        const card = document.getElementById("mainCard");
+        let gradeText = overallPercent >= 90 ? "🔥 Отлично! Вы эксперт" : (overallPercent >= 75 ? "👍 Хорошо" : (overallPercent >= 50 ? "📚 Средний уровень" : "🎯 Начальный уровень"));
+        
+        card.innerHTML = `
+            <div class="header"><h1>📋 Тест CSM 2.0</h1><p>Результат</p></div>
+            <div class="thankyou">
+                <h2>🙏 Спасибо, ${escapeHtml(testAnswers.userName)}!</h2>
+                <p>Ваш результат теста: <strong>${overallPercent}%</strong> правильных ответов.</p>
+                <p>${gradeText}</p>
+                <p style="font-size:0.9rem; color:#1f6e8c; margin-bottom: 1.5rem;">✅ Результаты теста успешно отправлены</p>
+                <button class="close-btn" onclick="closeTest()">🚪 Закрыть тест</button>
+            </div>
+        `;
+        const footer = document.querySelector("footer");
+        if(footer) footer.style.display = "none";
+        localStorage.removeItem("csm_test_v3");
+        localStorage.removeItem("self_assessment_v2");
+    }
+
+    function closeTest() {
+        window.close();
+        alert("Закройте эту вкладку вручную, чтобы завершить тест.");
+    }
+
+    async function loadTestQuestions() {
+        try {
+            const response = await fetch(TEST_QUESTIONS_URL);
+            const text = await response.text();
+            testAreas = JSON.parse(text);
+            
+            if (testAreas.error || testAreas.length === 0) {
+                throw new Error(testAreas.error || "Нет вопросов");
+            }
+            
+            testDataLoaded = true;
+            testAnswers.closed = testAreas.map(() => []);
+            testAnswers.open = testAreas.map(() => "");
+            for (let i = 0; i < testAreas.length; i++) {
+                testAnswers.closed[i] = new Array(testAreas[i].closedCount).fill(null);
+            }
+            
+            loadTestFromLocalStorage();
+            renderTest();
+        } catch (error) {
+            console.error("Ошибка загрузки теста:", error);
+            const card = document.getElementById("mainCard");
+            card.innerHTML = `
+                <div class="header"><h1>⚠️ Ошибка загрузки теста</h1></div>
+                <div class="thankyou"><p>Не удалось загрузить вопросы теста.</p>
+                <button onclick="location.reload()">🔄 Перезагрузить</button></div>
+            `;
+        }
+    }
+
+    function loadTest() {
+        loadTestQuestions();
+    }
+
+    // Функции-помощники
     function escapeHtml(str) {
         if (!str) return "";
         return str.replace(/[&<>]/g, function(m) {
@@ -70,241 +553,20 @@
 
     function showMessage(text, type) {
         let msgDiv = document.getElementById("dynamicMessage");
-        const contentDiv = document.querySelector("#surveyCard .content");
+        const mainCard = document.getElementById("mainCard");
+        const contentDiv = mainCard?.querySelector(".content");
         if (!msgDiv && contentDiv) {
             msgDiv = document.createElement("div");
             msgDiv.id = "dynamicMessage";
             contentDiv.appendChild(msgDiv);
-        }
+        } else if (!contentDiv) return;
         if (msgDiv) msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
         setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 4000);
     }
 
-    function validateCurrentArea() {
-        if (!dataLoaded) return false;
-        const closed = answers.closed[currentArea];
-        if (!closed) return false;
-        return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
-    }
-
-    function closeTest() {
-        window.close();
-        alert("Закройте эту вкладку вручную, чтобы завершить тест.");
-    }
-
-    function render() {
-        if (!dataLoaded || AREAS.length === 0) return;
-        
-        const card = document.getElementById("surveyCard");
-        const area = AREAS[currentArea];
-        const total = AREAS.length;
-        const percent = ((currentArea + 1) / total) * 100;
-
-        let html = `
-            <div class="header">
-                <h1>📊 Оценка CSM 2.0</h1>
-                <p>8 областей компетенций • Тест с автоматическим подсчетом</p>
-            </div>
-            <div class="progress-section">
-                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
-                <div class="progress-text">Область ${currentArea+1} из ${total}</div>
-            </div>
-            <div class="content">
-                <div class="user-info">
-                    <div class="form-group"><label>👤 ФИО *</label><input type="text" id="fio" value="${escapeHtml(answers.userName)}" placeholder="Иванов Иван Иванович"></div>
-                    <div class="form-group"><label>📧 Электронная почта *</label><input type="email" id="email" value="${escapeHtml(answers.userEmail)}" placeholder="example@domain.com"></div>
-                </div>
-                <div class="area-title">📌 ${escapeHtml(area.name)}</div>
-        `;
-
-        for (let i = 0; i < area.closed.length; i++) {
-            const q = area.closed[i];
-            const savedVal = answers.closed[currentArea]?.[i];
-            html += `<div class="question-block"><div class="question-text">${currentArea+1}.${i+1}. ${escapeHtml(q.text)}</div><div class="options">`;
-            for (let optIdx = 0; optIdx < q.options.length; optIdx++) {
-                const letter = String.fromCharCode(65 + optIdx);
-                const isChecked = (savedVal === letter);
-                html += `<label class="option"><input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}><span>${escapeHtml(q.options[optIdx])}</span></label>`;
-            }
-            html += `</div></div>`;
-        }
-
-        if (area.open) {
-            html += `<div class="question-block open-question"><div class="question-text">${currentArea+1}.${area.closed.length+1} (открытый). ${escapeHtml(area.openText)}</div>
-                      <textarea id="openAnswer" rows="4">${escapeHtml(answers.open[currentArea] || '')}</textarea></div>`;
-        }
-
-        html += `<div class="navigation">`;
-        if (currentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
-        else html += `<div></div>`;
-        if (currentArea < total-1) html += `<button id="nextBtn">Далее →</button>`;
-        else html += `<button id="submitBtn" class="submit-btn">✅ Завершить и отправить</button>`;
-        html += `</div></div>`;
-
-        card.innerHTML = html;
-
-        document.getElementById("fio")?.addEventListener('input', (e) => { answers.userName = e.target.value; saveToLocalStorage(); });
-        document.getElementById("email")?.addEventListener('input', (e) => { answers.userEmail = e.target.value; saveToLocalStorage(); });
-
-        for (let i = 0; i < area.closed.length; i++) {
-            const radios = document.querySelectorAll(`input[name="q_${i}"]`);
-            radios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    answers.closed[currentArea][i] = e.target.value;
-                    saveToLocalStorage();
-                });
-            });
-        }
-
-        if (area.open) {
-            document.getElementById("openAnswer")?.addEventListener('input', (e) => {
-                answers.open[currentArea] = e.target.value;
-                saveToLocalStorage();
-            });
-        }
-
-        document.getElementById("prevBtn")?.addEventListener('click', () => {
-            if (validateCurrentArea()) { currentArea--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
-            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
-        });
-        document.getElementById("nextBtn")?.addEventListener('click', () => {
-            if (validateCurrentArea()) { currentArea++; render(); window.scrollTo({top:0, behavior:'smooth'}); }
-            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
-        });
-        document.getElementById("submitBtn")?.addEventListener('click', submitAll);
-    }
-
-    function submitAll() {
-        if (submissionInProgress || !dataLoaded) return;
-        
-        if (!answers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
-        if (!answers.userEmail.trim() || !answers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
-
-        for (let i = 0; i < AREAS.length; i++) {
-            const closedArr = answers.closed[i];
-            if (!closedArr || closedArr.length !== AREAS[i].closedCount || closedArr.some(v => v === null)) {
-                currentArea = i;
-                render();
-                showMessage(`❌ Ответьте на все закрытые вопросы в области ${i+1}`, "error");
-                return;
-            }
-        }
-
-        submissionInProgress = true;
-        showMessage("⏳ Отправка результатов...", "success");
-
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('ru-RU');
-        const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-
-        let payload = { userName: answers.userName, userEmail: answers.userEmail, date: dateStr, time: timeStr };
-
-        for (let a = 0; a < AREAS.length; a++) {
-            const area = AREAS[a];
-            const closedAnswers = answers.closed[a];
-            const scores = [];
-            for (let q = 0; q < area.closed.length; q++) {
-                const isCorrect = (closedAnswers[q] === area.closed[q].correct);
-                const percentScore = isCorrect ? 100 : 0;
-                scores.push(percentScore);
-                payload[`area_${a+1}_q${q+1}_percent`] = percentScore;
-            }
-            const avgScore = scores.length ? Math.round(scores.reduce((s,v)=>s+v,0) / scores.length) : 0;
-            payload[`area_${a+1}_avg`] = avgScore;
-            payload[`area_${a+1}_open`] = answers.open[a] || "(не заполнено)";
-        }
-
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(payload)
-        }).then(() => {
-            showResultPage();
-        }).catch(() => {
-            showMessage("❌ Ошибка при отправке. Проверьте интернет-соединение.", "error");
-            submissionInProgress = false;
-        });
-    }
-
-    function showResultPage() {
-        let totalCorrectSum = 0;
-        let totalClosedCount = 0;
-        for (let a = 0; a < AREAS.length; a++) {
-            for (let q = 0; q < AREAS[a].closed.length; q++) {
-                const isCorr = (answers.closed[a][q] === AREAS[a].closed[q].correct);
-                totalCorrectSum += isCorr ? 100 : 0;
-                totalClosedCount++;
-            }
-        }
-        const overallPercent = totalClosedCount ? Math.round(totalCorrectSum / totalClosedCount) : 0;
-        
-        const card = document.getElementById("surveyCard");
-        let gradeText = overallPercent >= 90 ? "🔥 Отлично! Вы эксперт" : (overallPercent >= 75 ? "👍 Хорошо" : (overallPercent >= 50 ? "📚 Средний уровень" : "🎯 Начальный уровень"));
-        
-        card.innerHTML = `
-            <div class="header"><h1>📋 Тест CSM 2.0</h1><p>Результат</p></div>
-            <div class="thankyou">
-                <h2>🙏 Спасибо, ${escapeHtml(answers.userName)}!</h2>
-                <p>Ваш результат: <strong>${overallPercent}%</strong> правильных ответов.</p>
-                <p>${gradeText}</p>
-                <p style="font-size:0.9rem; color:#1f6e8c; margin-bottom: 1.5rem;">✅ Результаты успешно отправлены</p>
-                <button class="close-btn" onclick="closeTest()">🚪 Закрыть тест</button>
-            </div>
-        `;
-        const footer = document.querySelector("footer");
-        if(footer) footer.style.display = "none";
-        localStorage.removeItem("csm_full_v3");
-    }
-
-    // Загрузка вопросов из Google Таблицы
-    async function loadQuestions() {
-        try {
-            console.log("Загрузка вопросов из:", QUESTIONS_URL);
-            const response = await fetch(QUESTIONS_URL);
-            const text = await response.text();
-            console.log("Ответ сервера:", text);
-            
-            AREAS = JSON.parse(text);
-            
-            if (AREAS.error) {
-                throw new Error(AREAS.error);
-            }
-            
-            if (AREAS.length === 0) {
-                throw new Error("Нет областей с вопросами");
-            }
-            
-            dataLoaded = true;
-            
-            answers.closed = AREAS.map(() => []);
-            answers.open = AREAS.map(() => "");
-            for (let i = 0; i < AREAS.length; i++) {
-                answers.closed[i] = new Array(AREAS[i].closedCount).fill(null);
-            }
-            
-            loadFromLocalStorage();
-            render();
-        } catch (error) {
-            console.error("Ошибка загрузки вопросов:", error);
-            const card = document.getElementById("surveyCard");
-            card.innerHTML = `
-                <div class="header"><h1>⚠️ Ошибка загрузки</h1></div>
-                <div class="thankyou">
-                    <p>Не удалось загрузить вопросы: ${error.message}</p>
-                    <p style="font-size:0.8rem; margin-top:1rem;">Проверьте:</p>
-                    <ul style="text-align:left; display:inline-block; margin-top:0.5rem;">
-                        <li>Что лист в таблице называется <strong>"Вопросы"</strong></li>
-                        <li>Что скрипт развёрнут как веб-приложение с доступом "Anyone"</li>
-                        <li>Что URL в QUESTIONS_URL правильный</li>
-                    </ul>
-                    <button onclick="location.reload()" style="margin-top:1.5rem;">🔄 Перезагрузить</button>
-                </div>
-            `;
-        }
-    }
-
-    loadQuestions();
+    // Старт: самооценка
+    loadSelfFromLocalStorage();
+    renderSelfAssessment();
 </script>
 </body>
 </html>
