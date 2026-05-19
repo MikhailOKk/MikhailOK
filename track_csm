@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Тест CSM 2.0 — Оценка компетенций</title>
+    <style>
+        /* ----- GLOBAL RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef2f8;
+            padding: 24px 16px;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* главная карточка */
+        .card {
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* шапка градиент */
+        .header {
+            background: linear-gradient(125deg, #0b3b4f 0%, #1f6e8c 100%);
+            color: white;
+            padding: 1.8rem 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.85;
+            font-size: 1rem;
+        }
+
+        /* прогресс-бар */
+        .progress-section {
+            padding: 0.9rem 2rem;
+            background: #f9fbfd;
+            border-bottom: 1px solid #e2edf2;
+        }
+
+        .progress-bar {
+            background: #e1e9f0;
+            border-radius: 40px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #1f6e8c;
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            margin-top: 8px;
+            text-align: right;
+            color: #2c5a6e;
+            font-weight: 500;
+        }
+
+        /* контент */
+        .content {
+            padding: 2rem;
+        }
+
+        /* блок пользователя */
+        .user-info {
+            background: #f1f7fa;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            border: 1px solid #dceaf0;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e4b6e;
+            font-size: 0.85rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #cbdbe2;
+            border-radius: 1.2rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: white;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1f6e8c;
+            box-shadow: 0 0 0 3px rgba(31, 110, 140, 0.2);
+        }
+
+        /* заголовок области */
+        .area-title {
+            background: #e7f0f5;
+            padding: 1rem 1.8rem;
+            margin: 0 -2rem 1.8rem -2rem;
+            border-left: 6px solid #1f6e8c;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #154455;
+        }
+
+        /* вопросы */
+        .question-block {
+            margin-bottom: 2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid #e2edf2;
+        }
+
+        .question-text {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: #0f2f3f;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-left: 1rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .option input {
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+            accent-color: #1f6e8c;
+        }
+
+        .option span {
+            font-size: 0.95rem !important;
+            font-weight: 400;
+            color: #1e2f3a;
+        }
+
+        .open-question textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            border: 1px solid #cbdbe2;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-top: 0.5rem;
+        }
+
+        /* навигация */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            background: #1f6e8c;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 3rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+        }
+
+        button.secondary {
+            background: #8aaebf;
+        }
+
+        button:hover {
+            background: #0e4f68;
+            transform: translateY(-1px);
+        }
+
+        button.secondary:hover {
+            background: #6e95aa;
+        }
+
+        .submit-btn {
+            background: #11998e;
+        }
+
+        .submit-btn:hover {
+            background: #0b7a70;
+        }
+
+        /* сообщения */
+        .message {
+            margin-top: 1.2rem;
+            padding: 0.9rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #ffe6e5;
+            color: #b91c1c;
+        }
+
+        /* страница "спасибо" */
+        .thankyou {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .thankyou h2 {
+            color: #1f6e8c;
+            margin-bottom: 1rem;
+        }
+
+        .thankyou p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7a8e9e;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 680px) {
+            .content {
+                padding: 1.2rem;
+            }
+
+            .area-title {
+                margin: 0 -1.2rem 1.5rem -1.2rem;
+                padding: 0.8rem 1.2rem;
+                font-size: 1.1rem;
+            }
+
+            .option span {
+                font-size: 0.85rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card" id="surveyCard"></div>
+    <footer>📌 Прогресс автоматически сохраняется в браузере</footer>
+</div>
+<iframe name="hiddenFrame" style="display:none"></iframe>
+
+<script>
+    // --------------------------------------------------------------
+    // 1. НАСТРОЙКА: URL вашей Google Таблицы (скрипт Apps Script)
+    //    ВАЖНО: разверните скрипт как веб-приложение и вставьте URL ниже
+    // --------------------------------------------------------------
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYRyf0gTJu45wRo55zzXQbKrTF26tSGNXVjg72xVp_2EO1xMValqzIA9Ck45GxU-mZJA/exec";  // замените на финальный URL после деплоя
+
+    // --------------------------------------------------------------
+    // 2. МАССИВ ОБЛАСТЕЙ (вопросы: закрытые + открытый)
+    // --------------------------------------------------------------
+    const AREAS = [
+        { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
+            closed: [
+                { text: "Что из перечисленного является ключевым отличием Web 3.0 от Web 2.0?", options: ["Появление социальных сетей", "Децентрализация данных и управление через блокчейн", "Увеличение скорости интернета", "Переход от мобильных приложений к десктопным"], correct: "B" },
+                { text: "Какой из трендов НЕ относится к Industry 4.0?", options: ["Интернет вещей (IoT)", "Большие данные (Big Data)", "Ручной труд без цифровизации", "Облачные вычисления (Cloud)"], correct: "C" },
+                { text: "Что является основной целью цифровой трансформации в крупном банке?", options: ["Повышение скорости, эффективности и качества клиентского опыта за счёт цифровых технологий", "Замена всех сотрудников роботами", "Снижение зарплат IT-специалистам", "Переход на бумажный документооборот"], correct: "A" },
+                { text: "Что из перечисленного является примером использования Big Data в банковской сфере?", options: ["Печать документов на принтере", "Увеличение числа банкоматов", "Замена офисов коворкингами", "Персонализация предложений на основе транзакционной истории клиента"], correct: "D" }
+            ],
+            openText: "Назовите 2–3 технологических тренда (из перечисленных выше или других), которые вы уже использовали или видите потенциал применить в вашей работе. Кратко опишите, как именно."
+        },
+        { name: "ОБЛАСТЬ 2. СТРАТЕГИЯ", closedCount: 4, open: true,
+            closed: [
+                { text: "Что из перечисленного НЕ входит в канву бизнес-модели (Business Model Canvas)?", options: ["Ценностные предложения", "Ключевые партнёры", "Потоки доходов", "Годовая отчётность перед акционерами"], correct: "D" },
+                { text: "Какой элемент является центральным в концепции LoveMark?", options: ["Низкая цена", "Максимальное количество продуктов в линейке", "Агрессивная реклама", "Эмоциональная связь с брендом, выходящая за рамки рациональной выгоды"], correct: "D" },
+                { text: "Что такое «карта гипотез» в контексте поиска точек роста?", options: ["Географическая карта офисов", "Схема проезда до работы", "План эвакуации при пожаре", "Структурированный перечень предположений о том, как улучшить бизнес, с приоритетами и критериями проверки"], correct: "D" },
+                { text: "Что из перечисленного является примером человекоцентричности в банковском сервисе?", options: ["Увеличение числа продуктов в линейке", "Снижение затрат на поддержку", "Проектирование сервиса вокруг потребностей клиента, а не внутренних процессов банка", "Автоматизация без возможности обратиться к человеку"], correct: "C" }
+            ],
+            openText: "Приведите 1–2 примера из вашей работы, где вы применяли стратегическое мышление или работали с гипотезами роста для клиента / партнёра. Что это было за ситуация? Какие шаги предприняли?"
+        },
+        { name: "ОБЛАСТЬ 3. РЕИНЖИНИРИНГ ПРОЦЕССОВ И ОРГСТРУКТУРЫ", closedCount: 4, open: true,
+            closed: [
+                { text: "Что такое «клиентский путь» (Customer Journey Map, CJM)?", options: ["Список покупок клиента", "Визуализация последовательности взаимодействий клиента с компанией от первого контакта до завершения", "Штатное расписание отдела продаж", "Техническая документация для разработчиков"], correct: "B" },
+                { text: "Какой метод используется для оптимизации процессов?", options: ["AS-IS → TO-BE", "Только мозговой штурм", "Случайный выбор нового процесса", "Запрет на любые изменения"], correct: "A" },
+                { text: "Что из перечисленного является Core-финтех-продуктом Сбера?", options: ["Okko", "2ГИС", "Самокат", "СберБанк Онлайн / SberPay"], correct: "D" },
+                { text: "Что из перечисленного является первым шагом в реинжиниринге процесса?", options: ["Внедрение нового ПО", "Описание текущего процесса «AS-IS» и его проблем", "Увольнение сотрудников", "Покупка нового оборудования"], correct: "B" }
+            ],
+            openText: "Опишите ситуацию, где вы анализировали или улучшали какой-либо процесс в вашей работе (с клиентом, партнёром или внутри команды). Как выглядел процесс «как есть» (AS-IS)? Что вы предложили изменить («как будет» — TO-BE)?"
+        },
+        { name: "ОБЛАСТЬ 4. ПРОЕКТИРОВАНИЕ И РАЗРАБОТКА РЕШЕНИЯ", closedCount: 4, open: true,
+            closed: [
+                { text: "Что из перечисленного является принципом Agile?", options: ["Итеративность, адаптивность, работающий продукт как главная мера прогресса", "Жёсткое планирование на 2 года вперёд", "Полное отсутствие документации", "Только индивидуальная работа, без команды"], correct: "A" },
+                { text: "Что такое Sbergile?", options: ["Адаптация Agile-методологий под процессы и культуру Сбера", "Фирменный кофе в офисе Сбера", "Название нового продукта для бизнеса", "HR-система оценки персонала"], correct: "A" },
+                { text: "Что из перечисленного входит в партнёрскую программу Сбера?", options: ["Только спонсорство спортивных мероприятий", "Запрет на любые партнёрства", "Модели совместного продвижения, интеграции продуктов и revenue share с партнёрами экосистемы", "Только разовые скидки для сотрудников"], correct: "C" },
+                { text: "Что такое продуктовое мышление?", options: ["Фокус на технических характеристиках продукта", "Фокус на ценности для клиента и результате, а не на выполнении формальных требований", "Создание максимально сложного продукта", "Игнорирование обратной связи"], correct: "B" }
+            ],
+            openText: "Вспомните проект или задачу, где вы работали с партнёром Сбера (или внутри экосистемы). Как вы выстраивали взаимодействие? Какие инструменты проектного или продуктового менеджмента использовали?"
+        },
+        { name: "ОБЛАСТЬ 5. ВНЕДРЕНИЕ И РАЗВИТИЕ РЕШЕНИЯ", closedCount: 3, open: true,
+            closed: [
+                { text: "Что такое «Продуктовая полка Сбера»?", options: ["Магазин сувениров для сотрудников", "Единый реестр (портфель) готовых цифровых решений и продуктов, доступных для тиражирования внутри банка и экосистемы", "Мебель в переговорной", "Список книг, рекомендованных к прочтению"], correct: "B" },
+                { text: "Какой формат партнёрства предполагает совместное владение активами и разделение рисков?", options: ["Агентский договор", "Простое письмо о намерениях", "Договор аренды", "Совместное предприятие (Joint Venture)"], correct: "D" },
+                { text: "Что из перечисленного является примером успешного внедрения решения в экосистеме Сбера?", options: ["Разработка нового внутреннего регламента", "Проведение внутреннего совещания", "Создание презентации для руководства", "Интеграция сервиса партнёра в СберБанк Онлайн, которую начали использовать 100 000 клиентов"], correct: "D" }
+            ],
+            openText: "Назовите 1–2 решения (продукта, сервиса, интеграции), которые вы помогали внедрять для клиента или партнёра. Какие результаты были достигнуты (цифры, факты, отзывы)?"
+        },
+        { name: "ОБЛАСТЬ 6. ОБЩЕСИСТЕМНЫЕ КОМПЕТЕНЦИИ И МЕТОДОЛОГИЯ ПРОЕКТОВ РАЗВИТИЯ", closedCount: 4, open: true,
+            closed: [
+                { text: "Что описывает процесс ЦТ П3181?", options: ["Жизненный цикл проекта цифровой трансформации в Сбере (от идеи до внедрения и сопровождения)", "Порядок увольнения сотрудников", "Бухгалтерский учёт основных средств", "Процесс закупки канцтоваров"], correct: "A" },
+                { text: "Для какой цели рекомендуется использовать GigaChat в проектах развития?", options: ["Только для развлечения", "Для генерации гипотез, написания кода, саммари встреч, анализа документов и поиска идей", "Для замены всех руководителей", "Для отправки личных сообщений"], correct: "B" },
+                { text: "Что из перечисленного относится к инструментам CSM в рамках ЕФС «НашБизнес»?", options: ["Только электронная почта", "Бумажный журнал учёта", "Корпоративная столовая", "Конструктор гипотез, трекер задач и портфель проектов развития"], correct: "D" },
+                { text: "Что из перечисленного является целью системы мотивации CSM?", options: ["Наказать за ошибки", "Стимулировать достижение целей цифровой трансформации и качества работы с клиентами / партнёрами", "Увеличить количество совещаний", "Снизить зарплаты"], correct: "B" }
+            ],
+            openText: "Расскажите о вашем опыте использования GigaChat или других инструментов CSM (ЕФС «НашБизнес», АС «Эксперт» и др.). Как конкретно вы их применяли? Какой результат получили?"
+        },
+        { name: "ОБЛАСТЬ 7. ОТРАСЛЕВЫЕ КОМПЕТЕНЦИИ", closedCount: 4, open: true,
+            closed: [
+                { text: "Какой из факторов НЕ является драйвером отрасли при стратегическом анализе?", options: ["Технологические инновации", "Изменение госрегулирования", "Рыночные тренды и поведение конкурентов", "Цвет стен в офисе"], correct: "D" },
+                { text: "Что из перечисленного является операционным KPI в производственной отрасли?", options: ["ROE", "OEE (общая эффективность оборудования)", "Рыночная капитализация", "Количество подписчиков в Telegram"], correct: "B" },
+                { text: "Что такое проектное финансирование?", options: ["Обычный кредит на любые цели", "Финансирование инвестиционного проекта под его будущие денежные потоки, часто с ограниченным регрессом на заёмщика", "Микрозайм до зарплаты", "Оплата командировочных расходов"], correct: "B" },
+                { text: "Какой из перечисленных рисков является ключевым в производственной отрасли?", options: ["Риск неправильного выбора цвета логотипа", "Риск повышения зарплат офисных сотрудников", "Риск остановки производства из-за поломки оборудования или сбоя в цепочке поставок", "Риск отсутствия кофе в кулере"], correct: "C" }
+            ],
+            openText: "Назовите 2–3 ключевых вызова или тренда в отрасли ваших клиентов (например, производство, ритейл, логистика). Как эти вызовы влияют на их потребности в продуктах / сервисах Сбера и экосистемы?"
+        },
+        { name: "ОБЛАСТЬ 8. SOFT SKILLS", closedCount: 4, open: true,
+            closed: [
+                { text: "Что из перечисленного является проявлением системного мышления?", options: ["Решение проблемы изолированно, без учёта связей с другими элементами", "Игнорирование обратной связи", "Быстрые решения без анализа", "Анализ проблемы как части целостной системы, учёт причинно-следственных связей и косвенных эффектов"], correct: "D" },
+                { text: "Какое поведение характеризует «управление результатом»?", options: ["Постановка SMART-целей, мониторинг прогресса, коррекция действий и доведение до результата", "Перекладывание ответственности на других", "Ожидание указаний сверху по каждому шагу", "Хаотичное переключение между задачами без завершения"], correct: "A" },
+                { text: "Что из перечисленного относится к навыку «управление собой»?", options: ["Эмоциональная реакция на любой негатив", "Прокрастинация до дедлайна", "Саморегуляция, тайм-менеджмент, стрессоустойчивость и поддержание работоспособности", "Постоянное согласие со всеми"], correct: "C" },
+                { text: "Что из перечисленного является проявлением ответственности?", options: ["Поиск виноватых при ошибке", "Сокрытие проблемы", "Перекладывание задачи на коллегу", "Признание ошибки, анализ причин и предложение решения"], correct: "D" }
+            ],
+            openText: "Опишите ситуацию из вашей работы, где вам пришлось решать сложную проблему с участием нескольких сторон (клиент, партнёр, внутренние подразделения). Как вы действовали? Какие soft skills помогли?"
+        }
+    ];
+
+    // ----- Структура хранения -----
+    let currentArea = 0;
+    let answers = {
+        userName: "",
+        userEmail: "",
+        closed: AREAS.map(() => []),     // массив ответов (буквы A,B,C,D)
+        open: AREAS.map(() => "")
+    };
+
+    // Загрузка из localStorage
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem("csm_full_v2");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                answers.userName = parsed.userName || "";
+                answers.userEmail = parsed.userEmail || "";
+                answers.closed = parsed.closed || AREAS.map(() => []);
+                answers.open = parsed.open || AREAS.map(() => "");
+                for (let i = 0; i < AREAS.length; i++) {
+                    if (!answers.closed[i]) answers.closed[i] = [];
+                    while (answers.closed[i].length < AREAS[i].closedCount) answers.closed[i].push(null);
+                }
+            } catch(e) {}
+        }
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem("csm_full_v2", JSON.stringify(answers));
+    }
+
+    // helper: экранирование
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // отображение сообщения
+    function showMessage(text, type, autoClear = true) {
+        let msgDiv = document.getElementById("dynamicMessage");
+        const contentDiv = document.querySelector("#surveyCard .content");
+        if (!msgDiv && contentDiv) {
+            msgDiv = document.createElement("div");
+            msgDiv.id = "dynamicMessage";
+            contentDiv.appendChild(msgDiv);
+        } else if (!contentDiv) return;
+        if (msgDiv) msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
+        if (autoClear && type !== 'error') setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 5000);
+    }
+
+    // валидация текущей области (все закрытые вопросы отвечены)
+    function validateCurrentArea() {
+        const closed = answers.closed[currentArea];
+        if (!closed) return false;
+        const required = AREAS[currentArea].closedCount;
+        return closed.length === required && closed.every(v => v !== null && v !== undefined);
+    }
+
+    // Рендер всей страницы
+    function render() {
+        const card = document.getElementById("surveyCard");
+        const area = AREAS[currentArea];
+        const total = AREAS.length;
+        const percent = ((currentArea + 1) / total) * 100;
+
+        let html = `
+            <div class="header">
+                <h1>📊 Оценка CSM 2.0</h1>
+                <p>8 областей компетенций • Тест с автоматическим подсчетом</p>
+            </div>
+            <div class="progress-section">
+                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+                <div class="progress-text">Область ${currentArea+1} из ${total}</div>
+            </div>
+            <div class="content">
+                <div class="user-info">
+                    <div class="form-group"><label>👤 ФИО *</label><input type="text" id="fio" value="${escapeHtml(answers.userName)}" placeholder="Иванов Иван Иванович"></div>
+                    <div class="form-group"><label>📧 Электронная почта *</label><input type="email" id="email" value="${escapeHtml(answers.userEmail)}" placeholder="example@domain.com"></div>
+                </div>
+                <div class="area-title">📌 ${escapeHtml(area.name)}</div>
+        `;
+
+        // закрытые вопросы
+        for (let i = 0; i < area.closed.length; i++) {
+            const q = area.closed[i];
+            const savedVal = answers.closed[currentArea]?.[i];
+            html += `<div class="question-block"><div class="question-text">${currentArea+1}.${i+1}. ${escapeHtml(q.text)}</div><div class="options">`;
+            for (let optIdx = 0; optIdx < q.options.length; optIdx++) {
+                const letter = String.fromCharCode(65 + optIdx);
+                const isChecked = (savedVal === letter);
+                html += `<label class="option"><input type="radio" name="q_${i}" value="${letter}" ${isChecked ? 'checked' : ''}><span>${escapeHtml(q.options[optIdx])}</span></label>`;
+            }
+            html += `</div></div>`;
+        }
+
+        // открытый вопрос
+        if (area.open) {
+            html += `<div class="question-block open-question"><div class="question-text">${currentArea+1}.${area.closed.length+1} (открытый). ${escapeHtml(area.openText)}</div>
+                      <textarea id="openAnswer" rows="4">${escapeHtml(answers.open[currentArea] || '')}</textarea></div>`;
+        }
+
+        html += `<div class="navigation">`;
+        if (currentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
+        else html += `<div></div>`;
+        if (currentArea < total-1) html += `<button id="nextBtn">Далее →</button>`;
+        else html += `<button id="submitBtn" class="submit-btn submit-btn">✅ Завершить и отправить</button>`;
+        html += `</div></div>`;
+
+        card.innerHTML = html;
+
+        // слушатели ФИО/почта
+        document.getElementById("fio")?.addEventListener('input', (e) => { answers.userName = e.target.value; saveToLocalStorage(); });
+        document.getElementById("email")?.addEventListener('input', (e) => { answers.userEmail = e.target.value; saveToLocalStorage(); });
+
+        // радиокнопки
+        for (let i = 0; i < area.closed.length; i++) {
+            const radios = document.querySelectorAll(`input[name="q_${i}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    answers.closed[currentArea][i] = e.target.value;
+                    saveToLocalStorage();
+                });
+            });
+        }
+
+        // открытый ответ
+        if (area.open) {
+            document.getElementById("openAnswer")?.addEventListener('input', (e) => {
+                answers.open[currentArea] = e.target.value;
+                saveToLocalStorage();
+            });
+        }
+
+        // навигация
+        document.getElementById("prevBtn")?.addEventListener('click', () => {
+            if (validateCurrentArea()) { currentArea--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
+        });
+        document.getElementById("nextBtn")?.addEventListener('click', () => {
+            if (validateCurrentArea()) { currentArea++; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+            else showMessage("❌ Ответьте на все закрытые вопросы в этой области", "error");
+        });
+        document.getElementById("submitBtn")?.addEventListener('click', submitAll);
+    }
+
+    // ФИНАЛЬНАЯ ОТПРАВКА: подсчёт процентов по каждому вопросу (100% если верно) + среднее по области
+    function submitAll() {
+        if (!answers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
+        if (!answers.userEmail.trim() || !answers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
+
+        // проверим все области полностью
+        for (let i = 0; i < AREAS.length; i++) {
+            const closedArr = answers.closed[i];
+            if (!closedArr || closedArr.length !== AREAS[i].closedCount || closedArr.some(v => v === null)) {
+                currentArea = i;
+                render();
+                showMessage(`❌ Ответьте на все закрытые вопросы в области ${i+1}`, "error");
+                return;
+            }
+        }
+
+        // ----- Формируем данные для отправки по новой структуре: каждый вопрос = % (0 или 100) + среднее по области -----
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU');
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+        let payload = {
+            userName: answers.userName,
+            userEmail: answers.userEmail,
+            date: dateStr,
+            time: timeStr
+        };
+
+        // Обходим области
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            const closedAnswers = answers.closed[a];
+            const scores = []; // проценты по закрытым вопросам этой области
+            for (let q = 0; q < area.closed.length; q++) {
+                const isCorrect = (closedAnswers[q] === area.closed[q].correct);
+                const percentScore = isCorrect ? 100 : 0;
+                scores.push(percentScore);
+                payload[`area_${a+1}_q${q+1}_percent`] = percentScore;
+            }
+            // среднее по области (сумма процентов / количество закрытых вопросов)
+            const avgScore = scores.length ? Math.round(scores.reduce((s,v)=>s+v,0) / scores.length) : 0;
+            payload[`area_${a+1}_avg`] = avgScore;
+            // открытый ответ
+            payload[`area_${a+1}_open`] = answers.open[a] || "(не заполнено)";
+        }
+
+        // Отправка через форму POST (скрытая)
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrame';
+        for (const [key, val] of Object.entries(payload)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = val;
+            form.appendChild(input);
+        }
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        // Показываем окно благодарности с общим процентом (среднее по всем закрытым вопросам)
+        let totalCorrectSum = 0;
+        let totalClosedCount = 0;
+        for (let a = 0; a < AREAS.length; a++) {
+            const area = AREAS[a];
+            for (let q = 0; q < area.closed.length; q++) {
+                const isCorr = (answers.closed[a][q] === area.closed[q].correct);
+                totalCorrectSum += isCorr ? 100 : 0;
+                totalClosedCount++;
+            }
+        }
+        const overallPercent = totalClosedCount ? Math.round(totalCorrectSum / totalClosedCount) : 0;
+        showThankYouWindow(answers.userName, overallPercent);
+        localStorage.removeItem("csm_full_v2");
+    }
+
+    function showThankYouWindow(userName, percentage) {
+        const card = document.getElementById("surveyCard");
+        let gradeText = percentage >= 90 ? "🔥 Отлично! Вы эксперт" : (percentage >= 75 ? "👍 Хорошо. Вы уверенно владеете материалом" : (percentage >= 50 ? "📚 Средний уровень. Есть куда расти" : "🎯 Начальный уровень. Рекомендуем изучить материалы"));
+        card.innerHTML = `
+            <div class="header"><h1>📋 Тест CSM 2.0</h1><p>Результат</p></div>
+            <div class="thankyou"><h2>🙏 Спасибо, ${escapeHtml(userName)}!</h2>
+            <p>Ваш результат: <strong>${percentage}%</strong> правильных ответов.</p>
+            <p>${gradeText}</p>
+            <button onclick="window.close()" style="background:#1f6e8c; padding:12px 32px; border-radius:40px; border:none; color:white; font-weight:bold; cursor:pointer;">Закрыть страницу</button></div>
+        `;
+        const footer = document.querySelector("footer");
+        if(footer) footer.style.display = "none";
+    }
+
+    loadFromLocalStorage();
+    render();
+</script>
+</body>
+</html>
