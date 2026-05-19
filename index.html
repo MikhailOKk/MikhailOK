@@ -220,6 +220,14 @@
             background: #0b7a70;
         }
 
+        .close-btn {
+            background: #6c757d;
+        }
+
+        .close-btn:hover {
+            background: #5a6268;
+        }
+
         .message {
             margin-top: 1.2rem;
             padding: 0.9rem;
@@ -253,6 +261,11 @@
             margin-bottom: 2rem;
         }
 
+        .thankyou button {
+            margin: 0.5rem;
+            min-width: 200px;
+        }
+
         footer {
             text-align: center;
             font-size: 0.7rem;
@@ -277,9 +290,9 @@
     <div class="card" id="surveyCard"></div>
     <footer>📌 Прогресс автоматически сохраняется в браузере</footer>
 </div>
+<iframe name="hiddenFrame" style="display:none" onload="handleIframeResponse()"></iframe>
 
 <script>
-    // ВАЖНО: Замените этот URL на URL вашего развёрнутого Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBpduo_xObsGhGUAS_Sll4lNAWV4dXMrpxl_t7ewIWFNjOvnAlvn8HLu7dGBEQokPALQ/exec";
 
     const AREAS = [
@@ -363,6 +376,7 @@
         closed: AREAS.map(() => []),
         open: AREAS.map(() => "")
     };
+    let submissionInProgress = false;
 
     function loadFromLocalStorage() {
         const saved = localStorage.getItem("csm_full_v2");
@@ -411,6 +425,16 @@
         const closed = answers.closed[currentArea];
         if (!closed) return false;
         return closed.length === AREAS[currentArea].closedCount && closed.every(v => v !== null && v !== undefined);
+    }
+
+    function handleIframeResponse() {
+        // Если отправка завершена, ничего не делаем — результат уже показан
+    }
+
+    function closeTest() {
+        window.close();
+        // Если window.close() не работает (бывает в некоторых браузерах), показываем сообщение
+        alert("Закройте эту вкладку вручную, чтобы завершить тест.");
     }
 
     function render() {
@@ -494,6 +518,8 @@
     }
 
     function submitAll() {
+        if (submissionInProgress) return;
+        
         if (!answers.userName.trim()) { showMessage("❌ Укажите ФИО", "error"); return; }
         if (!answers.userEmail.trim() || !answers.userEmail.includes('@')) { showMessage("❌ Укажите корректный email", "error"); return; }
 
@@ -506,6 +532,9 @@
                 return;
             }
         }
+
+        submissionInProgress = true;
+        showMessage("⏳ Отправка результатов...", "success");
 
         const now = new Date();
         const dateStr = now.toLocaleDateString('ru-RU');
@@ -528,22 +557,25 @@
             payload[`area_${a+1}_open`] = answers.open[a] || "(не заполнено)";
         }
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = SCRIPT_URL;
-        form.target = 'hiddenFrame';
-        form.style.display = 'none';
-        for (const [key, val] of Object.entries(payload)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = val;
-            form.appendChild(input);
-        }
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+        // Отправка через fetch (без открытия новой страницы)
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(payload)
+        }).then(() => {
+            // Так как mode: 'no-cors', мы не можем прочитать ответ, но отправка состоялась
+            showResultPage();
+        }).catch((error) => {
+            console.error('Ошибка:', error);
+            showMessage("❌ Ошибка при отправке. Проверьте интернет-соединение.", "error");
+            submissionInProgress = false;
+        });
+    }
 
+    function showResultPage() {
         let totalCorrectSum = 0;
         let totalClosedCount = 0;
         for (let a = 0; a < AREAS.length; a++) {
@@ -556,14 +588,17 @@
         const overallPercent = totalClosedCount ? Math.round(totalCorrectSum / totalClosedCount) : 0;
         
         const card = document.getElementById("surveyCard");
-        let gradeText = overallPercent >= 90 ? "🔥 Отлично! Вы эксперт" : (overallPercent >= 75 ? "👍 Хорошо" : (overallPercent >= 50 ? "📚 Средний уровень" : "🎯 Начальный уровень"));
+        let gradeText = overallPercent >= 90 ? "🔥 Отлично! Вы эксперт" : (overallPercent >= 75 ? "👍 Хорошо. Вы уверенно владеете материалом" : (overallPercent >= 50 ? "📚 Средний уровень. Есть куда расти" : "🎯 Начальный уровень. Рекомендуем изучить материалы"));
+        
         card.innerHTML = `
             <div class="header"><h1>📋 Тест CSM 2.0</h1><p>Результат</p></div>
-            <div class="thankyou"><h2>🙏 Спасибо, ${escapeHtml(answers.userName)}!</h2>
-            <p>Ваш результат: <strong>${overallPercent}%</strong> правильных ответов.</p>
-            <p>${gradeText}</p>
-            <p style="font-size:0.9rem; color:#1f6e8c;">Результаты отправлены в Google Таблицу</p>
-            <button onclick="location.reload()" style="background:#1f6e8c; padding:12px 32px; border-radius:40px; border:none; color:white; font-weight:bold; cursor:pointer; margin-top:1rem;">📝 Пройти тест заново</button></div>
+            <div class="thankyou">
+                <h2>🙏 Спасибо, ${escapeHtml(answers.userName)}!</h2>
+                <p>Ваш результат: <strong>${overallPercent}%</strong> правильных ответов.</p>
+                <p>${gradeText}</p>
+                <p style="font-size:0.9rem; color:#1f6e8c; margin-bottom: 1.5rem;">✅ Результаты успешно отправлены в Google Таблицу</p>
+                <button class="close-btn" onclick="closeTest()" style="background:#6c757d; padding:12px 32px; border-radius:40px; border:none; color:white; font-weight:bold; cursor:pointer;">🚪 Закрыть тест</button>
+            </div>
         `;
         const footer = document.querySelector("footer");
         if(footer) footer.style.display = "none";
