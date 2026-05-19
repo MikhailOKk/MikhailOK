@@ -280,7 +280,7 @@
 
 <script>
     // ВАЖНО: Замените этот URL на URL вашего развёрнутого Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYRyf0gTJu45wRo55zzXQbKrTF26tSGNXVjg72xVp_2EO1xMValqzIA9Ck45GxU-mZJA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbpFfq0eRdxEEX-1KoTrWcDKqBcL_EfMOKdr_ij54Z2qpEj-9ytyESHWE4G6NaozoV3A/exec";
 
     const AREAS = [
         { name: "ОБЛАСТЬ 1. ОСОЗНАНИЕ (тренды, технологии, цифровая трансформация)", closedCount: 4, open: true,
