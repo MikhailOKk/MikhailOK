@@ -195,7 +195,7 @@
         if (selfCurrentArea > 0) html += `<button class="secondary" id="prevBtn">← Назад</button>`;
         else html += `<div></div>`;
         if (selfCurrentArea < totalAreas - 1) html += `<button id="nextBtn">Далее →</button>`;
-        else html += `<button id="submitSelfBtn" class="submit-btn">✅ Завершить самооценку</button>`;
+        else html += `<button id="tSelfBtn" class="submit-btn">✅ Завершить самооценку</button>`;
         html += `</div></div>`;
 
         card.innerHTML = html;
@@ -231,6 +231,9 @@
     }
 
     async function submitSelfAssessment() {
+        // ДОБАВЬТЕ ЭТУ СТРОКУ:
+        alert("Функция вызвана! URL: " + SCRIPT_URL);
+            
         if (!selfAnswers.userName?.trim()) { showMessage("❌ Введите ФИО", 'error'); return; }
         if (!selfAnswers.userEmail?.trim() || !selfAnswers.userEmail.includes('@')) { showMessage("❌ Введите корректный email", 'error'); return; }
         if (!validateAllSelf()) { showMessage("❌ Оцените все утверждения перед отправкой", 'error'); return; }
