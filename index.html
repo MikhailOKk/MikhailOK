@@ -18,10 +18,11 @@
 </div>
 
 <script>
-    // ⚠️ ВСТАВЬТЕ НОВЫЙ URL ИЗ APPS SCRIPT (doGet для получения вопросов)
-    const QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbwdeKsGz65xvyvjHaO0U06Ar-aTDR7ySebMxrxcBUZ_e-arso9rT7XM1aQOac93ak021w/exec";
-    // URL для отправки результатов (doPost)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBpduo_xObsGhGUAS_Sll4lNAWV4dXMrpxl_t7ewIWFNjOvnAlvn8HLu7dGBEQokPALQ/exec";
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ДЛЯ ПОЛУЧЕНИЯ ВОПРОСОВ (doGet)
+    const QUESTIONS_URL = "https://script.google.com/macros/s/AKfycbzmQ4HUWxYGpNl0GQ8CLWDpXmN9ssMG-P7iSMAE7DIu7kvl_1re5Dh-1NZEcPSJc7cBSw/exec";
+    
+    // ⚠️ ВСТАВЬТЕ ВАШ URL ДЛЯ ОТПРАВКИ РЕЗУЛЬТАТОВ (doPost)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQqP2wBKFw0_iCoNkyt74OApczk1epS0AGz5bcnCMODo_fzKmUf1GSf2IThTHNYh7YHA/exec";
 
     let AREAS = [];
     let currentArea = 0;
@@ -35,7 +36,7 @@
     let dataLoaded = false;
 
     function loadFromLocalStorage() {
-        if (!dataLoaded) return;
+        if (!dataLoaded || AREAS.length === 0) return;
         const saved = localStorage.getItem("csm_full_v3");
         if (saved) {
             try {
@@ -92,7 +93,7 @@
     }
 
     function render() {
-        if (!dataLoaded) return;
+        if (!dataLoaded || AREAS.length === 0) return;
         
         const card = document.getElementById("surveyCard");
         const area = AREAS[currentArea];
@@ -259,11 +260,23 @@
     // Загрузка вопросов из Google Таблицы
     async function loadQuestions() {
         try {
+            console.log("Загрузка вопросов из:", QUESTIONS_URL);
             const response = await fetch(QUESTIONS_URL);
-            AREAS = await response.json();
+            const text = await response.text();
+            console.log("Ответ сервера:", text);
+            
+            AREAS = JSON.parse(text);
+            
+            if (AREAS.error) {
+                throw new Error(AREAS.error);
+            }
+            
+            if (AREAS.length === 0) {
+                throw new Error("Нет областей с вопросами");
+            }
+            
             dataLoaded = true;
             
-            // Инициализация структуры ответов
             answers.closed = AREAS.map(() => []);
             answers.open = AREAS.map(() => "");
             for (let i = 0; i < AREAS.length; i++) {
@@ -276,9 +289,17 @@
             console.error("Ошибка загрузки вопросов:", error);
             const card = document.getElementById("surveyCard");
             card.innerHTML = `
-                <div class="header"><h1>⚠️ Ошибка</h1></div>
-                <div class="thankyou"><p>Не удалось загрузить вопросы. Проверьте интернет-соединение или настройки Apps Script.</p>
-                <button onclick="location.reload()">🔄 Перезагрузить</button></div>
+                <div class="header"><h1>⚠️ Ошибка загрузки</h1></div>
+                <div class="thankyou">
+                    <p>Не удалось загрузить вопросы: ${error.message}</p>
+                    <p style="font-size:0.8rem; margin-top:1rem;">Проверьте:</p>
+                    <ul style="text-align:left; display:inline-block; margin-top:0.5rem;">
+                        <li>Что лист в таблице называется <strong>"Вопросы"</strong></li>
+                        <li>Что скрипт развёрнут как веб-приложение с доступом "Anyone"</li>
+                        <li>Что URL в QUESTIONS_URL правильный</li>
+                    </ul>
+                    <button onclick="location.reload()" style="margin-top:1.5rem;">🔄 Перезагрузить</button>
+                </div>
             `;
         }
     }
